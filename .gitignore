@@ -1,0 +1,9 @@
+.env
+cover.*
+gin-bin
+test.*
+.idea
+test.env
+go-echo-boilerplate
+.DS_Store
+.vscode/*
