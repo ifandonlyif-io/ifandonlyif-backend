@@ -4,6 +4,8 @@
 `go get github.com/stretchr/testify`
 
 [sqlc](https://docs.sqlc.dev/en/stable/overview/install.html)
+
+`go get github.com/labstack/echo/v4`
  ## Commands
  
 >   install docker postgres
