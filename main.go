@@ -18,15 +18,15 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
-
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 
 	runDBMigration(config.MigrationURL, config.DBSource)
-
 	store := db.NewStore(conn)
+
+	runEchoServer(config, store)
 }
 
 func runDBMigration(migrationURL string, dbSource string) {
@@ -48,8 +48,5 @@ func runEchoServer(config util.Config, store db.Store) {
 		log.Fatal("cannot create server:", err)
 	}
 
-	err = server.Start(config.HTTPServerAddress)
-	if err != nil {
-		log.Fatal("cannot start server:", err)
-	}
+	server.Echo.Logger.Fatal(server.Start(":1323"))
 }
