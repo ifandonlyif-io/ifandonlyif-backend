@@ -37,9 +37,10 @@ func (server *Server) setupRouter() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	e.POST("/createUser", server.createUser)
+	e.POST("/createuser", server.createUser)
 	e.GET("/", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.POST("/swagger/*", echoSwagger.WrapHandler)
 	server.Echo = e
 }
 

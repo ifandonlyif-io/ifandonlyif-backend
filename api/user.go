@@ -41,14 +41,22 @@ func newUserResponse(user db.User) userResponse {
 }
 
 // createUser godoc
-// @Summary Create a New User.
-// @Description get the CreateUser response of server.
-// @Tags createUser
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /createUser [Post]
-
+// @Summary      Create An User
+// @Description  create user by params
+// @Tags         createUser
+// @Accept       json
+// @Produce      json
+// @param FullName formData string true "FullName"
+// @param WalletAddress formData string true "WalletAddress"
+// @param CountryCode formData string true "CountryCode"
+// @param EmailAddress formData string true "EmailAddress"
+// @param TwitterName formData string true "TwitterName"
+// @param ImageUri formData string true "ImageUri"
+// @Success      200  {object}  userResponse
+// @Failure      400  {string}  StatusBadRequest
+// @Failure      404  {string}  StatusNotFound
+// @Failure      500  {string}  StatusInternalServerError
+// @Router       /createUser [POST]
 func (server *Server) createUser(c echo.Context) error {
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
