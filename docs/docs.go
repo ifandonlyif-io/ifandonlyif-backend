@@ -65,43 +65,43 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "FullName",
-                        "name": "FullName",
+                        "description": "fullName",
+                        "name": "fullName",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "WalletAddress",
-                        "name": "WalletAddress",
+                        "description": "walletAddress",
+                        "name": "walletAddress",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "CountryCode",
-                        "name": "CountryCode",
+                        "description": "countryCode",
+                        "name": "countryCode",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "EmailAddress",
-                        "name": "EmailAddress",
+                        "description": "emailAddress",
+                        "name": "emailAddress",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "TwitterName",
-                        "name": "TwitterName",
+                        "description": "twitterName",
+                        "name": "twitterName",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "ImageUri",
-                        "name": "ImageUri",
+                        "description": "imageUri",
+                        "name": "imageUri",
                         "in": "formData",
                         "required": true
                     }
@@ -137,30 +137,7 @@ const docTemplate = `{
     },
     "definitions": {
         "api.userResponse": {
-            "type": "object",
-            "properties": {
-                "country_code": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "email_address": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "image_uri": {
-                    "type": "string"
-                },
-                "twitter_name": {
-                    "type": "string"
-                },
-                "wallet_address": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         }
     }
 }`

@@ -10,33 +10,33 @@ import (
 )
 
 type createUserRequest struct {
-	FullName      string `json:"username" binding:"required"`
-	WalletAddress string `json:"full_name" binding:"required"`
-	CountryCode   string `json:"CountryCode" binding:"required"`
-	EmailAddress  string `json:"EmailAddress" binding:"required,email"`
-	TwitterName   string `json:"TwitterName" binding:"required"`
-	ImageUri      string `json:"ImageUri" binding:"required"`
+	fullName      string `json:"fullName" binding:"required"`
+	walletAddress string `json:"walletAddress" binding:"required"`
+	countryCode   string `json:"countryCode" binding:"required"`
+	emailAddress  string `json:"emailAddress" binding:"required,email"`
+	twitterName   string `json:"twitterName" binding:"required"`
+	imageUri      string `json:"imageUri" binding:"required"`
 }
 
 type userResponse struct {
-	FullName      string    `json:"full_name"`
-	WalletAddress string    `json:"wallet_address"`
-	CountryCode   string    `json:"country_code"`
-	EmailAddress  string    `json:"email_address"`
-	TwitterName   string    `json:"twitter_name"`
-	ImageUri      string    `json:"image_uri"`
-	CreatedAt     time.Time `json:"created_at"`
+	fullName      string    `json:"fullName"`
+	walletAddress string    `json:"walletAddress"`
+	countryCode   string    `json:"countryCode"`
+	emailAddress  string    `json:"emailAddress"`
+	twitterName   string    `json:"twitterName"`
+	imageUri      string    `json:"imageUri"`
+	createdAt     time.Time `json:"createdAt"`
 }
 
 func newUserResponse(user db.User) userResponse {
 	return userResponse{
-		FullName:      user.FullName,
-		WalletAddress: user.WalletAddress,
-		CountryCode:   user.CountryCode,
-		EmailAddress:  user.EmailAddress,
-		TwitterName:   user.TwitterName,
-		ImageUri:      user.ImageUri,
-		CreatedAt:     user.CreatedAt,
+		fullName:      user.FullName,
+		walletAddress: user.WalletAddress,
+		countryCode:   user.CountryCode,
+		emailAddress:  user.EmailAddress,
+		twitterName:   user.TwitterName,
+		imageUri:      user.ImageUri,
+		createdAt:     user.CreatedAt,
 	}
 }
 
@@ -46,12 +46,12 @@ func newUserResponse(user db.User) userResponse {
 // @Tags         createUser
 // @Accept       json
 // @Produce      json
-// @param FullName formData string true "FullName"
-// @param WalletAddress formData string true "WalletAddress"
-// @param CountryCode formData string true "CountryCode"
-// @param EmailAddress formData string true "EmailAddress"
-// @param TwitterName formData string true "TwitterName"
-// @param ImageUri formData string true "ImageUri"
+// @param fullName formData string true "fullName"
+// @param walletAddress formData string true "walletAddress"
+// @param countryCode formData string true "countryCode"
+// @param emailAddress formData string true "emailAddress"
+// @param twitterName formData string true "twitterName"
+// @param imageUri formData string true "imageUri"
 // @Success      200  {object}  userResponse
 // @Failure      400  {string}  StatusBadRequest
 // @Failure      404  {string}  StatusNotFound
@@ -60,12 +60,12 @@ func newUserResponse(user db.User) userResponse {
 func (server *Server) createUser(c echo.Context) error {
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
-		FullName:      c.FormValue("FullName"),
-		WalletAddress: c.FormValue("WalletAddress"),
-		CountryCode:   c.FormValue("CountryCode"),
-		EmailAddress:  c.FormValue("EmailAddress"),
-		TwitterName:   c.FormValue("TwitterName"),
-		ImageUri:      c.FormValue("ImageUri"),
+		FullName:      c.FormValue("fullName"),
+		WalletAddress: c.FormValue("walletAddress"),
+		CountryCode:   c.FormValue("countryCode"),
+		EmailAddress:  c.FormValue("emailAddress"),
+		TwitterName:   c.FormValue("twitterName"),
+		ImageUri:      c.FormValue("imageUri"),
 	})
 	if err != nil {
 		return err

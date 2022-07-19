@@ -1,21 +1,6 @@
 basePath: /
 definitions:
   api.userResponse:
-    properties:
-      country_code:
-        type: string
-      created_at:
-        type: string
-      email_address:
-        type: string
-      full_name:
-        type: string
-      image_uri:
-        type: string
-      twitter_name:
-        type: string
-      wallet_address:
-        type: string
     type: object
 host: localhost:1323
 info:
@@ -53,34 +38,34 @@ paths:
       - application/json
       description: create user by params
       parameters:
-      - description: FullName
+      - description: fullName
         in: formData
-        name: FullName
+        name: fullName
         required: true
         type: string
-      - description: WalletAddress
+      - description: walletAddress
         in: formData
-        name: WalletAddress
+        name: walletAddress
         required: true
         type: string
-      - description: CountryCode
+      - description: countryCode
         in: formData
-        name: CountryCode
+        name: countryCode
         required: true
         type: string
-      - description: EmailAddress
+      - description: emailAddress
         in: formData
-        name: EmailAddress
+        name: emailAddress
         required: true
         type: string
-      - description: TwitterName
+      - description: twitterName
         in: formData
-        name: TwitterName
+        name: twitterName
         required: true
         type: string
-      - description: ImageUri
+      - description: imageUri
         in: formData
-        name: ImageUri
+        name: imageUri
         required: true
         type: string
       produces:
