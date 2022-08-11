@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ifandonlyif-io/ifandonlyif-backend/token"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,9 +23,10 @@ func ServerHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-// AuthMiddleware creates a gin middleware for authorization
-func authMiddleware(tokenMaker token.Maker, next echo.HandlerFunc) echo.HandlerFunc {
+// AuthMiddleware creates a echo middleware for authorization
+func (server *Server) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+
 		authorizationHeader := ctx.Request().Header[authorizationHeaderKey]
 
 		if len(authorizationHeader) == 0 {
@@ -47,7 +47,7 @@ func authMiddleware(tokenMaker token.Maker, next echo.HandlerFunc) echo.HandlerF
 		}
 
 		accessToken := fields[1]
-		payload, err := tokenMaker.VerifyToken(accessToken)
+		payload, err := server.tokenMaker.VerifyToken(accessToken)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
