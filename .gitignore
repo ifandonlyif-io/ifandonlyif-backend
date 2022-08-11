@@ -3,6 +3,7 @@ cover.*
 gin-bin
 test.*
 .idea
+main
 test.env
 go-echo-boilerplate
 .DS_Store
