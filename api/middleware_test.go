@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/ifandonlyif-io/ifandonlyif-backend/token"
-	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,13 +83,15 @@ func TestAuthMiddleware(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			e := echo.New()
 			server := newTestServer(t, nil)
-			e.Use(server.AuthMiddleware)
-			server.Echo = e
+			server.Echo.Use(server.AuthMiddleware)
+
+			request, err := http.NewRequest(http.MethodGet, "/auth", nil)
 			recorder := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, "/", nil)
 			require.NoError(t, err)
+
+			c := server.Echo.NewContext(request, recorder)
+			c.SetPath("/auth")
 
 			tc.setupAuth(t, request, server.tokenMaker)
 			server.Echo.ServeHTTP(recorder, request)
