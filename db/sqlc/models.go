@@ -55,4 +55,5 @@ type User struct {
 	TwitterName   string        `json:"twitter_name"`
 	BlockpassID   sql.NullInt64 `json:"blockpass_id"`
 	ImageUri      string        `json:"image_uri"`
+	Nonce         sql.NullInt64 `json:"nonce"`
 }

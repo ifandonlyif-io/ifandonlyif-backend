@@ -15,7 +15,7 @@ const (
 	authorizationPayloadKey = "authorization_payload"
 )
 
-// AuthMiddleware creates a echo middleware for authorization
+// AuthMiddleware creates an echo middleware for authorization
 func (server *Server) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 
