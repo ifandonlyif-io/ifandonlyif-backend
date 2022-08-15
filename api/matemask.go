@@ -7,10 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
-	"strings"
 	"sync"
-	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
-	"github.com/labstack/echo/v4"
 )
 
 type User struct {
@@ -86,15 +83,15 @@ func bindReqBody(r *http.Request, obj any) error {
 // 			Address: strings.ToLower(p.Address), // let's only store lower case
 // 			Nonce:   nonce,
 // 		}
-		// if err := storage.CreateIfNotExists(u); err != nil {
-		// 	switch errors.Is(err, ErrUserExists) {
-		// 	case true:
-		// 		w.WriteHeader(http.StatusConflict)
-		// 	default:
-		// 		w.WriteHeader(http.StatusInternalServerError)
-		// 	}
-		// 	return
-}
+// if err := storage.CreateIfNotExists(u); err != nil {
+// 	switch errors.Is(err, ErrUserExists) {
+// 	case true:
+// 		w.WriteHeader(http.StatusConflict)
+// 	default:
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 	}
+// 	return
+//}
 
 // func Authenticate( address string, nonce string, sigHex string) (User, error) {
 
