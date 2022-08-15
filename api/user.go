@@ -13,9 +13,10 @@ type createUserRequest struct {
 	fullName      string `json:"fullName" binding:"required"`
 	walletAddress string `json:"walletAddress" binding:"required"`
 	countryCode   string `json:"countryCode" binding:"required"`
-	emailAddress  string `json:"emailAddress" binding:"required,email"`
+	emailAddress  string `json:"emailAddress" binding:"required"`
 	twitterName   string `json:"twitterName" binding:"required"`
 	imageUri      string `json:"imageUri" binding:"required"`
+	nonce         string `json:"twitterName" binding:"required"`
 }
 
 type userResponse struct {
@@ -36,7 +37,6 @@ func newUserResponse(user db.User) userResponse {
 		emailAddress:  user.EmailAddress,
 		twitterName:   user.TwitterName,
 		imageUri:      user.ImageUri,
-		createdAt:     user.CreatedAt,
 	}
 }
 
