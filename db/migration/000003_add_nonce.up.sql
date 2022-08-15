@@ -1,2 +1,2 @@
 ALTER TABLE users
-ADD COLUMN "nonce" bigint ;
+ADD COLUMN "nonce" varchar ;

@@ -1,4 +1,4 @@
-package crypto
+package api
 
 import (
 	"crypto/rand"
@@ -7,7 +7,10 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
+	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
+	"github.com/labstack/echo/v4"
 )
 
 type User struct {
@@ -27,6 +30,13 @@ var (
 
 type RegisterPayload struct {
 	Address string `json:"address"`
+}
+
+func (p RegisterPayload) Validate() error {
+	if !hexRegex.MatchString(p.Address) {
+		return ErrInvalidAddress
+	}
+	return nil
 }
 
 var (
@@ -52,6 +62,38 @@ func GetNonce() (string, error) {
 
 func bindReqBody(r *http.Request, obj any) error {
 	return json.NewDecoder(r.Body).Decode(obj)
+}
+
+// func (server *Server) RegisterHandler(c echo.Context) error {
+
+// 		var p RegisterPayload
+// 		binder := &echo.DefaultBinder{}
+// 		binder.BindHeaders(c, request)
+// 		if err := bindReqBody(c.Request(), &p); err != nil {
+// 			c.WriteHeader(http.StatusBadRequest)
+// 			return
+// 		}
+// 		if err := p.Validate(); err != nil {
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			return
+// 		}
+// 		nonce, err := GetNonce()
+// 		if err != nil {
+// 			w.WriteHeader(http.StatusInternalServerError)
+// 			return
+// 		}
+// 		u := User{
+// 			Address: strings.ToLower(p.Address), // let's only store lower case
+// 			Nonce:   nonce,
+// 		}
+		// if err := storage.CreateIfNotExists(u); err != nil {
+		// 	switch errors.Is(err, ErrUserExists) {
+		// 	case true:
+		// 		w.WriteHeader(http.StatusConflict)
+		// 	default:
+		// 		w.WriteHeader(http.StatusInternalServerError)
+		// 	}
+		// 	return
 }
 
 // func Authenticate( address string, nonce string, sigHex string) (User, error) {
@@ -101,7 +143,7 @@ func getUserFromReqContext(r *http.Request) User {
 	return key
 }
 
-func renderJson(r *http.Request, w http.ResponseWriter, statusCode int, res interface{}) {
+func RenderJson(r *http.Request, w http.ResponseWriter, statusCode int, res interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8 ")
 	var body []byte
 	if res != nil {
@@ -115,4 +157,17 @@ func renderJson(r *http.Request, w http.ResponseWriter, statusCode int, res inte
 	if len(body) > 0 {
 		w.Write(body)
 	}
+}
+
+func (s SigninPayload) ValidateWalletAddress() error {
+	if !hexRegex.MatchString(s.Address) {
+		return ErrInvalidAddress
+	}
+	if !nonceRegex.MatchString(s.Nonce) {
+		return ErrInvalidNonce
+	}
+	if len(s.Sig) == 0 {
+		return ErrMissingSig
+	}
+	return nil
 }
