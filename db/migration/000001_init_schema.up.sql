@@ -24,7 +24,7 @@ CREATE TABLE "report_blocklists" (
   "id" uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   "http_address" varchar NOT NULL,
   "verified_at" timestamptz,
-  "user_wallet_address" varchar UNIQUE NOT NULL,
+  "user_wallet_address" varchar,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE "report_whitelists" (
   "id" uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   "http_address" varchar NOT NULL,
   "verified_at" timestamptz,
-  "user_wallet_address" varchar UNIQUE NOT NULL,
+  "user_wallet_address" varchar,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
