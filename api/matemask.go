@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
 
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
@@ -67,44 +68,30 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	user := db.CreateUserParams{
-		WalletAddress: sql.NullString{String: u.walletAddress, Valid: true},
-		Nonce:         sql.NullString{String: u.nonce, Valid: true},
+	var p RegisterPayload
+
+	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	// var p RegisterPayload
-	// binder := &echo.DefaultBinder{}
-	// binder.BindHeaders(ctx, request)
-	// if err := bindReqBody(ctx.Request(), &p); err != nil {
-	// 	c.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
-	// if err := p.Validate(); err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
-	// nonce, err := GetNonce()
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
-	// u := createUserRequest{
-	// 	walletAddress: strings.ToLower(p.Address), // let's only store lower case
-	// 	nonce:   nonce,
-	// }
+	if err := p.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 
-	// createUser, err := server.store.CreateUser(ctx.Request().Context(), server.db.CreateUserParams{
-	// 	walletAddress:      c.FormValue("fullName"),
-	// 	nonce: c.FormValue("walletAddress"),
-	// 	CountryCode:   c.FormValue("countryCode"),
-	// 	EmailAddress:  c.FormValue("emailAddress"),
-	// 	TwitterName:   c.FormValue("twitterName"),
-	// 	ImageUri:      c.FormValue("imageUri"),
-	// })
-	// if err != nil {
-	// 	return err
-	// }
-	// return c.JSON(http.StatusCreated, createUser)
+	nonce, err := GetNonce()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	user := db.CreateUserParams{
+		WalletAddress: sql.NullString{String: strings.ToLower(p.Address), Valid: true},
+		Nonce:         sql.NullString{String: nonce, Valid: true},
+	}
+
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusCreated, user)
 }
 
