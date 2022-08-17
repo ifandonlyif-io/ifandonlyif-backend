@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
+	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -15,8 +16,19 @@ import (
 )
 
 type User struct {
-	walletAddress string
-	nonce         string
+	WalletAddress string `json:"walletAddress"`
+	Nonce         string `json:"nonce"`
+}
+
+type RegisterPayload struct {
+	WalletAddress string `json:"walletAddress"`
+}
+
+func (p RegisterPayload) Validate() error {
+	if !hexRegex.MatchString(p.WalletAddress) {
+		return ErrInvalidAddress
+	}
+	return nil
 }
 
 var (
@@ -28,17 +40,6 @@ var (
 	hexRegex   *regexp.Regexp = regexp.MustCompile(`^0x[a-fA-F0-9]{40}$`)
 	nonceRegex *regexp.Regexp = regexp.MustCompile(`^[0-9]+$`)
 )
-
-type RegisterPayload struct {
-	Address string `json:"address"`
-}
-
-func (p RegisterPayload) Validate() error {
-	if !hexRegex.MatchString(p.Address) {
-		return ErrInvalidAddress
-	}
-	return nil
-}
 
 var (
 	ErrUserNotExists  = errors.New("user does not exist")
@@ -62,37 +63,32 @@ func GetNonce() (string, error) {
 }
 
 func (server *Server) RegisterHandler(c echo.Context) (err error) {
-
-	u := new(User)
-	if err = c.Bind(u); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
-	}
-
 	var p RegisterPayload
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+	fmt.Println(p.WalletAddress)
 
 	if err := p.Validate(); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
 
 	nonce, err := GetNonce()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidNonce)
 	}
 
-	user := db.CreateUserParams{
-		WalletAddress: sql.NullString{String: strings.ToLower(p.Address), Valid: true},
+	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
+		WalletAddress: sql.NullString{String: strings.ToLower(p.WalletAddress), Valid: true},
 		Nonce:         sql.NullString{String: nonce, Valid: true},
-	}
+	})
 
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, createUser)
 }
 
 // func Authenticate( address string, nonce string, sigHex string) (User, error) {
