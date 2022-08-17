@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"time"
 
@@ -31,12 +32,12 @@ type userResponse struct {
 
 func newUserResponse(user db.User) userResponse {
 	return userResponse{
-		fullName:      user.FullName,
-		walletAddress: user.WalletAddress,
-		countryCode:   user.CountryCode,
-		emailAddress:  user.EmailAddress,
-		twitterName:   user.TwitterName,
-		imageUri:      user.ImageUri,
+		fullName:      user.FullName.String,
+		walletAddress: user.WalletAddress.String,
+		countryCode:   user.CountryCode.String,
+		emailAddress:  user.EmailAddress.String,
+		twitterName:   user.TwitterName.String,
+		imageUri:      user.ImageUri.String,
 	}
 }
 
@@ -60,12 +61,13 @@ func newUserResponse(user db.User) userResponse {
 func (server *Server) createUser(c echo.Context) error {
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
-		FullName:      c.FormValue("fullName"),
-		WalletAddress: c.FormValue("walletAddress"),
-		CountryCode:   c.FormValue("countryCode"),
-		EmailAddress:  c.FormValue("emailAddress"),
-		TwitterName:   c.FormValue("twitterName"),
-		ImageUri:      c.FormValue("imageUri"),
+		FullName:      sql.NullString{c.FormValue("fullName"), true},
+		WalletAddress: sql.NullString{c.FormValue("walletAddress"), true},
+		CountryCode:   sql.NullString{c.FormValue("countryCode"), true},
+		EmailAddress:  sql.NullString{c.FormValue("emailAddress"), true},
+		TwitterName:   sql.NullString{c.FormValue("twitterName"), true},
+		ImageUri:      sql.NullString{c.FormValue("imageUri"), true},
+		Nonce:         sql.NullString{c.FormValue("nonce"), true},
 	})
 	if err != nil {
 		return err

@@ -19,19 +19,21 @@ INSERT INTO users (
   country_code,
   email_address,
   twitter_name,
-  image_uri
+  image_uri,
+  nonce
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 ) RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type CreateUserParams struct {
-	FullName      string `json:"full_name"`
-	WalletAddress string `json:"wallet_address"`
-	CountryCode   string `json:"country_code"`
-	EmailAddress  string `json:"email_address"`
-	TwitterName   string `json:"twitter_name"`
-	ImageUri      string `json:"image_uri"`
+	FullName      sql.NullString `json:"full_name"`
+	WalletAddress sql.NullString `json:"wallet_address"`
+	CountryCode   sql.NullString `json:"country_code"`
+	EmailAddress  sql.NullString `json:"email_address"`
+	TwitterName   sql.NullString `json:"twitter_name"`
+	ImageUri      sql.NullString `json:"image_uri"`
+	Nonce         sql.NullString `json:"nonce"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -42,6 +44,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.EmailAddress,
 		arg.TwitterName,
 		arg.ImageUri,
+		arg.Nonce,
 	)
 	var i User
 	err := row.Scan(
@@ -77,6 +80,30 @@ WHERE id = $1 LIMIT 1
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.WalletAddress,
+		&i.CreatedAt,
+		&i.CountryCode,
+		&i.EmailAddress,
+		&i.KycDate,
+		&i.TwitterName,
+		&i.BlockpassID,
+		&i.ImageUri,
+		&i.Nonce,
+	)
+	return i, err
+}
+
+const getUserByWalletAddress = `-- name: GetUserByWalletAddress :one
+SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+WHERE wallet_address = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByWalletAddress, walletAddress)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -166,8 +193,8 @@ RETURNING id, full_name, wallet_address, created_at, country_code, email_address
 `
 
 type UpdateUserEmailAddressParams struct {
-	ID           uuid.UUID `json:"id"`
-	EmailAddress string    `json:"email_address"`
+	ID           uuid.UUID      `json:"id"`
+	EmailAddress sql.NullString `json:"email_address"`
 }
 
 func (q *Queries) UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error) {
@@ -228,8 +255,8 @@ RETURNING id, full_name, wallet_address, created_at, country_code, email_address
 `
 
 type UpdateUserTwitterNameParams struct {
-	ID          uuid.UUID `json:"id"`
-	TwitterName string    `json:"twitter_name"`
+	ID          uuid.UUID      `json:"id"`
+	TwitterName sql.NullString `json:"twitter_name"`
 }
 
 func (q *Queries) UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error) {

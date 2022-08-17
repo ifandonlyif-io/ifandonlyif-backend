@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/ifandonlyif-io/ifandonlyif-backend/util"
@@ -10,12 +11,12 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	arg := CreateUserParams{
-		FullName:      util.RandomOwner(),
-		WalletAddress: util.RandomWalletAddress(),
-		CountryCode:   util.RandomCountry(),
-		EmailAddress:  util.RandomEmail(),
-		TwitterName:   util.RandomOwner(),
-		ImageUri:      "https://img.seadn.io/files/2ed3306fc4808ae7bc0b75802ea78c95.png?fit=max",
+		FullName:      sql.NullString{util.RandomOwner(), true},
+		WalletAddress: sql.NullString{util.RandomWalletAddress(), true},
+		CountryCode:   sql.NullString{util.RandomCountry(), true},
+		EmailAddress:  sql.NullString{util.RandomEmail(), true},
+		TwitterName:   sql.NullString{util.RandomOwner(), true},
+		ImageUri:      sql.NullString{"https://img.seadn.io/files/2ed3306fc4808ae7bc0b75802ea78c95.png?fit=max", true},
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)

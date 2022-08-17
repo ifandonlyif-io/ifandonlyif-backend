@@ -1,13 +1,13 @@
 CREATE TABLE "users" (
   "id" uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  "full_name" varchar NOT NULL,
-  "wallet_address" varchar UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
-  "country_code" varchar NOT NULL,
-  "email_address" varchar NOT NULL,
+  "full_name" varchar,
+  "wallet_address" varchar UNIQUE ,
+  "created_at" timestamptz DEFAULT 'now()',
+  "country_code" varchar,
+  "email_address" varchar,
   "kyc_date" timestamptz,
-  "twitter_name" varchar NOT NULL,
-  "blockpass_id" bigint 
+  "twitter_name" varchar,
+  "blockpass_id" bigint
 );
 
 CREATE TABLE "iff_nfts" (

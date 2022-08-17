@@ -2,17 +2,20 @@ package api
 
 import (
 	"crypto/rand"
-	"encoding/json"
+	"database/sql"
 	"errors"
 	"math/big"
 	"net/http"
 	"regexp"
 	"sync"
+
+	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
+	"github.com/labstack/echo/v4"
 )
 
 type User struct {
-	Address string
-	Nonce   string
+	walletAddress string
+	nonce         string
 }
 
 var (
@@ -57,41 +60,53 @@ func GetNonce() (string, error) {
 	return n.Text(10), nil
 }
 
-func bindReqBody(r *http.Request, obj any) error {
-	return json.NewDecoder(r.Body).Decode(obj)
+func (server *Server) RegisterHandler(c echo.Context) (err error) {
+
+	u := new(User)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	user := db.CreateUserParams{
+		WalletAddress: sql.NullString{String: u.walletAddress, Valid: true},
+		Nonce:         sql.NullString{String: u.nonce, Valid: true},
+	}
+
+	// var p RegisterPayload
+	// binder := &echo.DefaultBinder{}
+	// binder.BindHeaders(ctx, request)
+	// if err := bindReqBody(ctx.Request(), &p); err != nil {
+	// 	c.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
+	// if err := p.Validate(); err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
+	// nonce, err := GetNonce()
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	return
+	// }
+	// u := createUserRequest{
+	// 	walletAddress: strings.ToLower(p.Address), // let's only store lower case
+	// 	nonce:   nonce,
+	// }
+
+	// createUser, err := server.store.CreateUser(ctx.Request().Context(), server.db.CreateUserParams{
+	// 	walletAddress:      c.FormValue("fullName"),
+	// 	nonce: c.FormValue("walletAddress"),
+	// 	CountryCode:   c.FormValue("countryCode"),
+	// 	EmailAddress:  c.FormValue("emailAddress"),
+	// 	TwitterName:   c.FormValue("twitterName"),
+	// 	ImageUri:      c.FormValue("imageUri"),
+	// })
+	// if err != nil {
+	// 	return err
+	// }
+	// return c.JSON(http.StatusCreated, createUser)
+	return c.JSON(http.StatusCreated, user)
 }
-
-// func (server *Server) RegisterHandler(c echo.Context) error {
-
-// 		var p RegisterPayload
-// 		binder := &echo.DefaultBinder{}
-// 		binder.BindHeaders(c, request)
-// 		if err := bindReqBody(c.Request(), &p); err != nil {
-// 			c.WriteHeader(http.StatusBadRequest)
-// 			return
-// 		}
-// 		if err := p.Validate(); err != nil {
-// 			w.WriteHeader(http.StatusBadRequest)
-// 			return
-// 		}
-// 		nonce, err := GetNonce()
-// 		if err != nil {
-// 			w.WriteHeader(http.StatusInternalServerError)
-// 			return
-// 		}
-// 		u := User{
-// 			Address: strings.ToLower(p.Address), // let's only store lower case
-// 			Nonce:   nonce,
-// 		}
-// if err := storage.CreateIfNotExists(u); err != nil {
-// 	switch errors.Is(err, ErrUserExists) {
-// 	case true:
-// 		w.WriteHeader(http.StatusConflict)
-// 	default:
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 	}
-// 	return
-//}
 
 // func Authenticate( address string, nonce string, sigHex string) (User, error) {
 
@@ -134,37 +149,21 @@ type SigninPayload struct {
 	Sig     string `json:"sig"`
 }
 
-func getUserFromReqContext(r *http.Request) User {
-	ctx := r.Context()
-	key := ctx.Value("user").(User)
-	return key
-}
+// func getUserFromReqContext(r *http.Request) User {
+// 	ctx := r.Context()
+// 	key := ctx.Value("user").(User)
+// 	return key
+// }
 
-func RenderJson(r *http.Request, w http.ResponseWriter, statusCode int, res interface{}) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8 ")
-	var body []byte
-	if res != nil {
-		var err error
-		body, err = json.Marshal(res)
-		if err != nil { // TODO handle me better
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-	}
-	w.WriteHeader(statusCode)
-	if len(body) > 0 {
-		w.Write(body)
-	}
-}
-
-func (s SigninPayload) ValidateWalletAddress() error {
-	if !hexRegex.MatchString(s.Address) {
-		return ErrInvalidAddress
-	}
-	if !nonceRegex.MatchString(s.Nonce) {
-		return ErrInvalidNonce
-	}
-	if len(s.Sig) == 0 {
-		return ErrMissingSig
-	}
-	return nil
-}
+// func (s SigninPayload) validateWalletAddress() error {
+// 	if !hexRegex.MatchString(s.Address) {
+// 		return ErrInvalidAddress
+// 	}
+// 	if !nonceRegex.MatchString(s.Nonce) {
+// 		return ErrInvalidNonce
+// 	}
+// 	if len(s.Sig) == 0 {
+// 		return ErrMissingSig
+// 	}
+// 	return nil
+// }
