@@ -45,14 +45,15 @@ type ReportWhitelist struct {
 }
 
 type User struct {
-	ID            uuid.UUID     `json:"id"`
-	FullName      string        `json:"full_name"`
-	WalletAddress string        `json:"wallet_address"`
-	CreatedAt     time.Time     `json:"created_at"`
-	CountryCode   string        `json:"country_code"`
-	EmailAddress  string        `json:"email_address"`
-	KycDate       sql.NullTime  `json:"kyc_date"`
-	TwitterName   string        `json:"twitter_name"`
-	BlockpassID   sql.NullInt64 `json:"blockpass_id"`
-	ImageUri      string        `json:"image_uri"`
+	ID            uuid.UUID      `json:"id"`
+	FullName      sql.NullString `json:"full_name"`
+	WalletAddress sql.NullString `json:"wallet_address"`
+	CreatedAt     sql.NullTime   `json:"created_at"`
+	CountryCode   sql.NullString `json:"country_code"`
+	EmailAddress  sql.NullString `json:"email_address"`
+	KycDate       sql.NullTime   `json:"kyc_date"`
+	TwitterName   sql.NullString `json:"twitter_name"`
+	BlockpassID   sql.NullInt64  `json:"blockpass_id"`
+	ImageUri      sql.NullString `json:"image_uri"`
+	Nonce         sql.NullString `json:"nonce"`
 }

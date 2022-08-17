@@ -19,19 +19,21 @@ INSERT INTO users (
   country_code,
   email_address,
   twitter_name,
-  image_uri
+  image_uri,
+  nonce
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
-) RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri
+  $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type CreateUserParams struct {
-	FullName      string `json:"full_name"`
-	WalletAddress string `json:"wallet_address"`
-	CountryCode   string `json:"country_code"`
-	EmailAddress  string `json:"email_address"`
-	TwitterName   string `json:"twitter_name"`
-	ImageUri      string `json:"image_uri"`
+	FullName      sql.NullString `json:"full_name"`
+	WalletAddress sql.NullString `json:"wallet_address"`
+	CountryCode   sql.NullString `json:"country_code"`
+	EmailAddress  sql.NullString `json:"email_address"`
+	TwitterName   sql.NullString `json:"twitter_name"`
+	ImageUri      sql.NullString `json:"image_uri"`
+	Nonce         sql.NullString `json:"nonce"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -42,6 +44,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.EmailAddress,
 		arg.TwitterName,
 		arg.ImageUri,
+		arg.Nonce,
 	)
 	var i User
 	err := row.Scan(
@@ -55,6 +58,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }
@@ -70,7 +74,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri FROM users
+SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -88,12 +92,37 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
+	)
+	return i, err
+}
+
+const getUserByWalletAddress = `-- name: GetUserByWalletAddress :one
+SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+WHERE wallet_address = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByWalletAddress, walletAddress)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.WalletAddress,
+		&i.CreatedAt,
+		&i.CountryCode,
+		&i.EmailAddress,
+		&i.KycDate,
+		&i.TwitterName,
+		&i.BlockpassID,
+		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }
 
 const getUserForUpdate = `-- name: GetUserForUpdate :one
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri FROM users
+SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -112,12 +141,13 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, err
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri FROM users
+SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
@@ -140,6 +170,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 			&i.TwitterName,
 			&i.BlockpassID,
 			&i.ImageUri,
+			&i.Nonce,
 		); err != nil {
 			return nil, err
 		}
@@ -158,12 +189,12 @@ const updateUserEmailAddress = `-- name: UpdateUserEmailAddress :one
 UPDATE users
 SET email_address = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri
+RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserEmailAddressParams struct {
-	ID           uuid.UUID `json:"id"`
-	EmailAddress string    `json:"email_address"`
+	ID           uuid.UUID      `json:"id"`
+	EmailAddress sql.NullString `json:"email_address"`
 }
 
 func (q *Queries) UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error) {
@@ -180,6 +211,7 @@ func (q *Queries) UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmai
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }
@@ -188,7 +220,7 @@ const updateUserKycDate = `-- name: UpdateUserKycDate :one
 UPDATE users
 SET kyc_date = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri
+RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserKycDateParams struct {
@@ -210,6 +242,7 @@ func (q *Queries) UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDatePa
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }
@@ -218,12 +251,12 @@ const updateUserTwitterName = `-- name: UpdateUserTwitterName :one
 UPDATE users
 SET twitter_name = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri
+RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserTwitterNameParams struct {
-	ID          uuid.UUID `json:"id"`
-	TwitterName string    `json:"twitter_name"`
+	ID          uuid.UUID      `json:"id"`
+	TwitterName sql.NullString `json:"twitter_name"`
 }
 
 func (q *Queries) UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error) {
@@ -240,6 +273,7 @@ func (q *Queries) UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitt
 		&i.TwitterName,
 		&i.BlockpassID,
 		&i.ImageUri,
+		&i.Nonce,
 	)
 	return i, err
 }

@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -25,6 +26,7 @@ type Querier interface {
 	GetReportWhitelis(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetReportWhitelistUpdate(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetUser(ctx context.Context, id uuid.UUID) (User, error)
+	GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (User, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)
 	ListIffNfts(ctx context.Context) ([]IffNft, error)
 	ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error)

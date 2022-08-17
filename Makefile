@@ -11,4 +11,10 @@ migratedown:
 sqlc: 
 	sqlc generate
 
-.PHONY: postgres createdb dropdb migrateup migratedown
+proto:
+	rm -f doc/swagger/*.swagger.json \
+	--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true,merge_file_name=ifandonlyif
+# proto/*.proto
+# statik -src=./doc/swagger -dest=./doc
+
+.PHONY: postgres createdb dropdb migrateup migratedown proto

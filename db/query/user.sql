@@ -5,14 +5,19 @@ INSERT INTO users (
   country_code,
   email_address,
   twitter_name,
-  image_uri
+  image_uri,
+  nonce
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
 -- name: GetUser :one
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;
+
+-- name: GetUserByWalletAddress :one
+SELECT * FROM users
+WHERE wallet_address = $1 LIMIT 1;
 
 -- name: GetUserForUpdate :one
 SELECT * FROM users

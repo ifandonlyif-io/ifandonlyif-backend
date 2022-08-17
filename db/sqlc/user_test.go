@@ -2,19 +2,21 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
+	"github.com/ifandonlyif-io/ifandonlyif-backend/util"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCreateUser(t *testing.T) {
 	arg := CreateUserParams{
-		FullName:      "haha",
-		WalletAddress: "0xAdC41d839b7fC82Fb76bF57fAB7cdDf83bFa68aC",
-		CountryCode:   "TW",
-		EmailAddress:  "Test@gmail.com",
-		TwitterName:   "happy123",
-		ImageUri:      "https://img.seadn.io/files/2ed3306fc4808ae7bc0b75802ea78c95.png?fit=max",
+		FullName:      sql.NullString{util.RandomOwner(), true},
+		WalletAddress: sql.NullString{util.RandomWalletAddress(), true},
+		CountryCode:   sql.NullString{util.RandomCountry(), true},
+		EmailAddress:  sql.NullString{util.RandomEmail(), true},
+		TwitterName:   sql.NullString{util.RandomOwner(), true},
+		ImageUri:      sql.NullString{"https://img.seadn.io/files/2ed3306fc4808ae7bc0b75802ea78c95.png?fit=max", true},
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
