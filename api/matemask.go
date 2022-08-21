@@ -20,6 +20,10 @@ type User struct {
 	Nonce         string `json:"nonce"`
 }
 
+type code struct {
+	Code string `json:"code"`
+}
+
 type RegisterPayload struct {
 	WalletAddress string `json:"walletAddress"`
 }
@@ -87,8 +91,12 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	if err != nil {
 		return err
 	}
+	fmt.Println(createUser.Nonce)
+	resCode := &code{
+		Code: createUser.Nonce.String,
+	}
 
-	return c.JSON(http.StatusCreated, createUser)
+	return c.JSON(http.StatusCreated, resCode)
 }
 
 // func Authenticate( address string, nonce string, sigHex string) (User, error) {

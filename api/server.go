@@ -52,7 +52,7 @@ func (server *Server) setupRouter() {
 	// }))
 
 	// e.POST("/createuser", server.createUser)
-	e.POST("/register", server.RegisterHandler)
+	e.POST("/code", server.RegisterHandler)
 	e.GET("/", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
