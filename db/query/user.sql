@@ -45,6 +45,13 @@ SET kyc_date = $2
 WHERE id = $1
 RETURNING *;
 
+-- name: UpdateUserNonce :one
+UPDATE users
+SET nonce = $2
+WHERE wallet_address = $1
+RETURNING *;
+
+
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;

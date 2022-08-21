@@ -22,8 +22,8 @@ INSERT INTO report_whitelists (
 `
 
 type CreateReportWhitelistParams struct {
-	HttpAddress       string `json:"http_address"`
-	UserWalletAddress string `json:"user_wallet_address"`
+	HttpAddress       string         `json:"http_address"`
+	UserWalletAddress sql.NullString `json:"user_wallet_address"`
 }
 
 func (q *Queries) CreateReportWhitelist(ctx context.Context, arg CreateReportWhitelistParams) (ReportWhitelist, error) {

@@ -247,6 +247,37 @@ func (q *Queries) UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDatePa
 	return i, err
 }
 
+const updateUserNonce = `-- name: UpdateUserNonce :one
+UPDATE users
+SET nonce = $2
+WHERE wallet_address = $1
+RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+`
+
+type UpdateUserNonceParams struct {
+	WalletAddress sql.NullString `json:"wallet_address"`
+	Nonce         sql.NullString `json:"nonce"`
+}
+
+func (q *Queries) UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserNonce, arg.WalletAddress, arg.Nonce)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.WalletAddress,
+		&i.CreatedAt,
+		&i.CountryCode,
+		&i.EmailAddress,
+		&i.KycDate,
+		&i.TwitterName,
+		&i.BlockpassID,
+		&i.ImageUri,
+		&i.Nonce,
+	)
+	return i, err
+}
+
 const updateUserTwitterName = `-- name: UpdateUserTwitterName :one
 UPDATE users
 SET twitter_name = $2

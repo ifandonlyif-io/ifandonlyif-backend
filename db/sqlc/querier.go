@@ -36,6 +36,7 @@ type Querier interface {
 	UpdateReportWhitelisVerified(ctx context.Context, arg UpdateReportWhitelisVerifiedParams) (ReportWhitelist, error)
 	UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error)
 	UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDateParams) (User, error)
+	UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error)
 	UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error)
 }
 

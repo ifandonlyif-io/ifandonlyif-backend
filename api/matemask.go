@@ -10,8 +10,13 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
+	"github.com/ifandonlyif-io/ifandonlyif-backend/token"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,13 +29,36 @@ type code struct {
 	Code string `json:"code"`
 }
 
+type accessToken struct {
+	AccessToken string `json:"accessToken"`
+}
+
 type RegisterPayload struct {
 	WalletAddress string `json:"walletAddress"`
+}
+
+type SigninPayload struct {
+	WalletAddress string `json:"address"`
+	Nonce         string `json:"nonce"`
+	Sig           string `json:"sig"`
 }
 
 func (p RegisterPayload) Validate() error {
 	if !hexRegex.MatchString(p.WalletAddress) {
 		return ErrInvalidAddress
+	}
+	return nil
+}
+
+func (s SigninPayload) Validate() error {
+	if !hexRegex.MatchString(s.WalletAddress) {
+		return ErrInvalidAddress
+	}
+	if !nonceRegex.MatchString(s.Nonce) {
+		return ErrInvalidNonce
+	}
+	if len(s.Sig) == 0 {
+		return ErrMissingSig
 	}
 	return nil
 }
@@ -91,7 +119,7 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	fmt.Println(createUser.Nonce)
+
 	resCode := &code{
 		Code: createUser.Nonce.String,
 	}
@@ -99,62 +127,76 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resCode)
 }
 
-// func Authenticate( address string, nonce string, sigHex string) (User, error) {
+func (server *Server) LoginHandler(c echo.Context) (err error) {
 
-// 	if err != nil {
-// 		return user, err
-// 	}
-// 	if user.Nonce != nonce {
-// 		return user, ErrAuthError
-// 	}
+	var p SigninPayload
+	var tokenMaker token.Maker
+	var duration time.Duration
 
-// 	sig := hexutil.MustDecode(sigHex)
-// 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
-// 	// check here why I am subtracting 27 from the last byte
-// 	sig[crypto.RecoveryIDOffset] -= 27
-// 	msg := accounts.TextHash([]byte(nonce))
-// 	recovered, err := crypto.SigToPub(msg, sig)
-// 	if err != nil {
-// 		return user, err
-// 	}
-// 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
+	if err = (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 
-// 	if user.Address != strings.ToLower(recoveredAddr.Hex()) {
-// 		return user, ErrAuthError
-// 	}
+	if err = p.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
+	}
 
-// 	// update the nonce here so that the signature cannot be resused
-// 	nonce, err = GetNonce()
-// 	if err != nil {
-// 		return user, err
-// 	}
-// 	user.Nonce = nonce
-// 	storage.Update(user)
+	address := strings.ToLower(p.WalletAddress)
+	user, err := Authenticate(server, c, address, p.Nonce, p.Sig)
+	switch err {
+	case nil:
+	case ErrAuthError:
+		return echo.NewHTTPError(http.StatusUnauthorized)
+	default:
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
 
-// 	return user, nil
-// }
+	token, _, err := tokenMaker.CreateToken(user.FullName.String, duration)
 
-type SigninPayload struct {
-	Address string `json:"address"`
-	Nonce   string `json:"nonce"`
-	Sig     string `json:"sig"`
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	resToken := &accessToken{
+		AccessToken: token,
+	}
+	return c.JSON(http.StatusCreated, resToken)
 }
 
-// func getUserFromReqContext(r *http.Request) User {
-// 	ctx := r.Context()
-// 	key := ctx.Value("user").(User)
-// 	return key
-// }
+func Authenticate(server *Server, c echo.Context, walletAddress string, nonce string, sigHex string) (db.User, error) {
+	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
+	if err != nil {
+		return user, err
+	}
+	if user.Nonce.String != nonce {
+		return user, ErrAuthError
+	}
 
-// func (s SigninPayload) validateWalletAddress() error {
-// 	if !hexRegex.MatchString(s.Address) {
-// 		return ErrInvalidAddress
-// 	}
-// 	if !nonceRegex.MatchString(s.Nonce) {
-// 		return ErrInvalidNonce
-// 	}
-// 	if len(s.Sig) == 0 {
-// 		return ErrMissingSig
-// 	}
-// 	return nil
-// }
+	sig := hexutil.MustDecode(sigHex)
+	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
+	// check here why I am subtracting 27 from the last byte
+	sig[crypto.RecoveryIDOffset] -= 27
+	msg := accounts.TextHash([]byte(nonce))
+	recovered, err := crypto.SigToPub(msg, sig)
+	if err != nil {
+		return user, err
+	}
+	recoveredAddr := crypto.PubkeyToAddress(*recovered)
+
+	if user.WalletAddress.String != strings.ToLower(recoveredAddr.Hex()) {
+		return user, ErrAuthError
+	}
+
+	// update the nonce here so that the signature cannot be resused
+	nonce, err = GetNonce()
+	if err != nil {
+		return user, err
+	}
+	user.Nonce.String = nonce
+
+	server.store.UpdateUserNonce(c.Request().Context(), db.UpdateUserNonceParams{
+		WalletAddress: user.WalletAddress,
+		Nonce:         user.Nonce,
+	})
+
+	return user, nil
+}

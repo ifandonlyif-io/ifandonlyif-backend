@@ -22,8 +22,8 @@ INSERT INTO report_blocklists (
 `
 
 type CreateReportBlocklistParams struct {
-	HttpAddress       string `json:"http_address"`
-	UserWalletAddress string `json:"user_wallet_address"`
+	HttpAddress       string         `json:"http_address"`
+	UserWalletAddress sql.NullString `json:"user_wallet_address"`
 }
 
 func (q *Queries) CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error) {

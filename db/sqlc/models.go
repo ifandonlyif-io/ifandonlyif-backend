@@ -29,19 +29,19 @@ type NftProject struct {
 }
 
 type ReportBlocklist struct {
-	ID                uuid.UUID    `json:"id"`
-	HttpAddress       string       `json:"http_address"`
-	VerifiedAt        sql.NullTime `json:"verified_at"`
-	UserWalletAddress string       `json:"user_wallet_address"`
-	CreatedAt         time.Time    `json:"created_at"`
+	ID                uuid.UUID      `json:"id"`
+	HttpAddress       string         `json:"http_address"`
+	VerifiedAt        sql.NullTime   `json:"verified_at"`
+	UserWalletAddress sql.NullString `json:"user_wallet_address"`
+	CreatedAt         time.Time      `json:"created_at"`
 }
 
 type ReportWhitelist struct {
-	ID                uuid.UUID    `json:"id"`
-	HttpAddress       string       `json:"http_address"`
-	VerifiedAt        sql.NullTime `json:"verified_at"`
-	UserWalletAddress string       `json:"user_wallet_address"`
-	CreatedAt         time.Time    `json:"created_at"`
+	ID                uuid.UUID      `json:"id"`
+	HttpAddress       string         `json:"http_address"`
+	VerifiedAt        sql.NullTime   `json:"verified_at"`
+	UserWalletAddress sql.NullString `json:"user_wallet_address"`
+	CreatedAt         time.Time      `json:"created_at"`
 }
 
 type User struct {
