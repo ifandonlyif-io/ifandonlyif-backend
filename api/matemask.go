@@ -40,7 +40,7 @@ type RegisterPayload struct {
 type SigninPayload struct {
 	WalletAddress string `json:"address"`
 	Nonce         string `json:"nonce"`
-	Sig           string `json:"sig"`
+	Signature     string `json:"Signature"`
 }
 
 func (p RegisterPayload) Validate() error {
@@ -57,7 +57,7 @@ func (s SigninPayload) Validate() error {
 	if !nonceRegex.MatchString(s.Nonce) {
 		return ErrInvalidNonce
 	}
-	if len(s.Sig) == 0 {
+	if len(s.Signature) == 0 {
 		return ErrMissingSig
 	}
 	return nil
@@ -94,6 +94,19 @@ func GetNonce() (string, error) {
 	return n.Text(10), nil
 }
 
+// register godoc
+// @Summary      register
+// @Description  register a new user
+// @Tags         register
+// @Accept       json
+// @produce application/json
+// @param walletAddress body string true "walletAddress"
+// @Success      200  {string}  StatusOK
+// @Success      201  {string}  StatusOK
+// @Failure      400  {string}  StatusBadRequest
+// @Failure      404  {string}  StatusNotFound
+// @Failure      500  {string}  StatusInternalServerError
+// @Router       /register [POST]
 func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	var p RegisterPayload
 
@@ -127,6 +140,21 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resCode)
 }
 
+// login godoc
+// @Summary      login
+// @Description  login
+// @Tags         login
+// @Accept       json
+// @produce application/json
+// @param walletAddress body string true "walletAddress"
+// @param nonce body string true "nonce"
+// @param signature body string true "signature"
+// @Success      200  {string}  StatusOK
+// @Success      201  {string}  StatusOK
+// @Failure      400  {string}  StatusBadRequest
+// @Failure      404  {string}  StatusNotFound
+// @Failure      500  {string}  StatusInternalServerError
+// @Router       /login [POST]
 func (server *Server) LoginHandler(c echo.Context) (err error) {
 
 	var p SigninPayload
@@ -142,7 +170,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	}
 
 	address := strings.ToLower(p.WalletAddress)
-	user, err := Authenticate(server, c, address, p.Nonce, p.Sig)
+	user, err := Authenticate(server, c, address, p.Nonce, p.Signature)
 	switch err {
 	case nil:
 	case ErrAuthError:
