@@ -5,13 +5,13 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=simple_bank
+      - POSTGRES_DB=iffdev
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8080:1323"
     environment:
       - DB_SOURCE=postgresql://root:secret@postgres:5432/iffdev?sslmode=disable
     depends_on:
