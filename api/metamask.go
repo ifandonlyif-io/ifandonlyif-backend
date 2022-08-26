@@ -39,7 +39,6 @@ type RegisterPayload struct {
 
 type SigninPayload struct {
 	WalletAddress string `json:"address"`
-	Nonce         string `json:"nonce"`
 	Signature     string `json:"Signature"`
 }
 
@@ -170,7 +169,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	}
 
 	address := strings.ToLower(p.WalletAddress)
-	user, err := Authenticate(server, c, address, p.Nonce, p.Signature)
+	user, err := Authenticate(server, c, address, p.Signature)
 	switch err {
 	case nil:
 	case ErrAuthError:
@@ -190,20 +189,17 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resToken)
 }
 
-func Authenticate(server *Server, c echo.Context, walletAddress string, nonce string, sigHex string) (db.User, error) {
+func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
 		return user, err
-	}
-	if user.Nonce.String != nonce {
-		return user, ErrAuthError
 	}
 
 	sig := hexutil.MustDecode(sigHex)
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
 	sig[crypto.RecoveryIDOffset] -= 27
-	msg := accounts.TextHash([]byte(nonce))
+	msg := accounts.TextHash([]byte(user.Nonce.String))
 	recovered, err := crypto.SigToPub(msg, sig)
 	if err != nil {
 		return user, err
@@ -215,7 +211,7 @@ func Authenticate(server *Server, c echo.Context, walletAddress string, nonce st
 	}
 
 	// update the nonce here so that the signature cannot be resused
-	nonce, err = GetNonce()
+	nonce, err := GetNonce()
 	if err != nil {
 		return user, err
 	}
