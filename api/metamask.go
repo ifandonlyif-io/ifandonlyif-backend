@@ -53,9 +53,6 @@ func (s SigninPayload) Validate() error {
 	if !hexRegex.MatchString(s.WalletAddress) {
 		return ErrInvalidAddress
 	}
-	if !nonceRegex.MatchString(s.Nonce) {
-		return ErrInvalidNonce
-	}
 	if len(s.Signature) == 0 {
 		return ErrMissingSig
 	}
@@ -201,7 +198,9 @@ func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex s
 	sig[crypto.RecoveryIDOffset] -= 27
 	msg := accounts.TextHash([]byte(user.Nonce.String))
 	recovered, err := crypto.SigToPub(msg, sig)
+
 	if err != nil {
+		user.Nonce = sql.NullString{}
 		return user, err
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
