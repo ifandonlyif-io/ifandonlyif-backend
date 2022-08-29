@@ -103,16 +103,31 @@ func GetNonce() (string, error) {
 // @Failure      404  {string}  StatusNotFound
 // @Failure      500  {string}  StatusInternalServerError
 // @Router       /register [POST]
-func (server *Server) RegisterHandler(c echo.Context) (err error) {
+func (server *Server) NonceHandler(c echo.Context) (err error) {
 	var p RegisterPayload
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	fmt.Println(p.WalletAddress)
 
 	if err := p.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
+	}
+	fmt.Println(sql.NullString{String: p.WalletAddress, Valid: true})
+	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
+
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return err
+		}
+	}
+
+	resCode := &code{
+		Code: user.Nonce.String,
+	}
+
+	if len(user.Nonce.String) > 0 {
+		return c.JSON(http.StatusFound, resCode)
 	}
 
 	nonce, err := GetNonce()
@@ -129,7 +144,7 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 		return err
 	}
 
-	resCode := &code{
+	resCode = &code{
 		Code: createUser.Nonce.String,
 	}
 

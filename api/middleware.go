@@ -20,7 +20,6 @@ func (server *Server) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 
 		authorizationHeader := ctx.Request().Header
-		fmt.Println("AAAAuuuuutttttthhhhhhh")
 		if len(authorizationHeader) == 0 {
 			fmt.Println("authorization header is not provided")
 			err := errors.New("authorization header is not provided")

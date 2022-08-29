@@ -52,8 +52,8 @@ func (server *Server) setupRouter() {
 	// }))
 
 	// e.POST("/createuser", server.createUser)
-	// e.Group("/").Use(server.AuthMiddleware)
-	e.POST("/code", server.RegisterHandler)
+	e.Group("/auth").Use(server.AuthMiddleware)
+	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
 	e.GET("/", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
