@@ -113,20 +113,20 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	if err := p.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
-	fmt.Println(sql.NullString{String: p.WalletAddress, Valid: true})
+
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
 
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return err
-		}
+	if err != nil && err != sql.ErrNoRows {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+
+	fmt.Println(user.WalletAddress)
 
 	resCode := &code{
 		Code: user.Nonce.String,
 	}
 
-	if len(user.Nonce.String) > 0 {
+	if user.Nonce.String != "" {
 		return c.JSON(http.StatusFound, resCode)
 	}
 
@@ -141,7 +141,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	})
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, ErrUserExists)
 	}
 
 	resCode = &code{
@@ -185,7 +185,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	switch err {
 	case nil:
 	case ErrAuthError:
-		return echo.NewHTTPError(http.StatusUnauthorized)
+		return echo.NewHTTPError(http.StatusUnauthorized, ErrAuthError)
 	default:
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
@@ -204,7 +204,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
-		return user, err
+		return user, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
 	sig := hexutil.MustDecode(sigHex)
@@ -216,18 +216,18 @@ func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex s
 
 	if err != nil {
 		user.Nonce = sql.NullString{}
-		return user, err
+		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
 	if user.WalletAddress.String != strings.ToLower(recoveredAddr.Hex()) {
-		return user, ErrAuthError
+		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
 	// update the nonce here so that the signature cannot be resused
 	nonce, err := GetNonce()
 	if err != nil {
-		return user, err
+		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidNonce)
 	}
 	user.Nonce.String = nonce
 
