@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
-	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -110,23 +109,29 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	if err := p.Validate(); err != nil {
+	err = p.Validate()
+	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
 
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
-
+	// return (echo.NewHTTPError(http.StatusInternalServerError, user))
 	if err != nil && err != sql.ErrNoRows {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+	// if err == sql.ErrNoRows {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, ErrUserNotExists)
+	// }
 
-	fmt.Println(user.WalletAddress)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
 	resCode := &code{
 		Code: user.Nonce.String,
 	}
 
-	if user.Nonce.String != "" {
+	if len(user.Nonce.String) > 0 {
 		return c.JSON(http.StatusFound, resCode)
 	}
 
@@ -140,6 +145,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 		Nonce:         sql.NullString{String: nonce, Valid: true},
 	})
 
+	// return echo.NewHTTPError(http.StatusAccepted, createUser)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, ErrUserExists)
 	}

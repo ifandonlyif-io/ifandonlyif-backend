@@ -96,7 +96,7 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ReportBlocklist
+	items := []ReportBlocklist{}
 	for rows.Next() {
 		var i ReportBlocklist
 		if err := rows.Scan(

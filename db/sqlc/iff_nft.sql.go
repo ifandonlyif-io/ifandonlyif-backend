@@ -107,7 +107,7 @@ func (q *Queries) ListIffNfts(ctx context.Context) ([]IffNft, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []IffNft
+	items := []IffNft{}
 	for rows.Next() {
 		var i IffNft
 		if err := rows.Scan(

@@ -96,7 +96,7 @@ func (q *Queries) ListReportWhitelist(ctx context.Context) ([]ReportWhitelist, e
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ReportWhitelist
+	items := []ReportWhitelist{}
 	for rows.Next() {
 		var i ReportWhitelist
 		if err := rows.Scan(
