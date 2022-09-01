@@ -141,7 +141,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	}
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
-		WalletAddress: sql.NullString{String: strings.ToLower(p.WalletAddress), Valid: true},
+		WalletAddress: sql.NullString{String: p.WalletAddress, Valid: true},
 		Nonce:         sql.NullString{String: nonce, Valid: true},
 	})
 
