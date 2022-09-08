@@ -10,7 +10,6 @@ RUN go build -o main main.go
 FROM alpine:3.16
 WORKDIR /app
 COPY --from=builder /app/main .
-COPY --from=builder /app/migrate.linux-amd64 ./migrate
 COPY db/migration ./db/migration
 COPY app.env .
 COPY start.sh .
@@ -20,5 +19,6 @@ RUN ["chmod", "+x", "/app/start.sh"]
 
 
 EXPOSE 8080
+EXPOSE 5432
 CMD [ "/app/main" ]
 ENTRYPOINT [ "/app/start.sh" ]
