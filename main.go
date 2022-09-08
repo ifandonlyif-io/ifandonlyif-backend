@@ -8,7 +8,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/ifandonlyif-io/ifandonlyif-backend/api"
-	"github.com/ifandonlyif-io/ifandonlyif-backend/client"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
 	"github.com/ifandonlyif-io/ifandonlyif-backend/util"
 	_ "github.com/lib/pq"
@@ -43,8 +42,6 @@ func main() {
 	runDBMigration(config.MigrationURL, config.DBSource)
 	store := db.NewStore(conn)
 
-	client.RunCronFetchGas()
-
 	runEchoServer(config, store)
 
 }
@@ -64,6 +61,7 @@ func runDBMigration(migrationURL string, dbSource string) {
 
 func runEchoServer(config util.Config, store db.Store) {
 	server, err := api.NewServer(config, store)
+
 	if err != nil {
 		log.Fatal("cannot create server:", err)
 	}

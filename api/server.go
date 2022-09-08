@@ -33,8 +33,8 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		store:      store,
 		tokenMaker: tokenMaker,
 	}
-
 	server.setupRouter()
+	server.RunCronFetchGas()
 	return server, nil
 }
 
@@ -46,12 +46,7 @@ func (server *Server) setupRouter() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	// e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-	// 	AllowOrigins: []string{"https://labstack.com", "https://labstack.net"},
-	// 	AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	// }))
-
-	// e.POST("/createuser", server.createUser)
+	// Routes
 	e.Group("/auth").Use(server.AuthMiddleware)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)

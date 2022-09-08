@@ -11,6 +11,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type GasPrice struct {
+	ID        uuid.UUID     `json:"id"`
+	Average   sql.NullInt32 `json:"average"`
+	CreatedAt sql.NullTime  `json:"created_at"`
+}
+
 type IffNft struct {
 	ID                         uuid.UUID `json:"id"`
 	ProjectID                  int64     `json:"project_id"`
