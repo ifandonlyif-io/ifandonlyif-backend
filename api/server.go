@@ -51,7 +51,7 @@ func (server *Server) setupRouter() {
 	e.GET("/gasinfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	e.GET("/", HealthCheck)
+	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
 	server.Echo = e
@@ -69,7 +69,7 @@ func (server *Server) Start(address string) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router / [get]
+// @Router /health [get]
 func HealthCheck(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": "Server is up and running",

@@ -18,10 +18,88 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:1323",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/": {
+        "/code": {
+            "post": {
+                "description": "register a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "code"
+                ],
+                "summary": "code",
+                "parameters": [
+                    {
+                        "description": "walletAddress",
+                        "name": "walletAddress",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/gasinfo": {
+            "get": {
+                "description": "get 24 hours gas prices",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gasinfo"
+                ],
+                "summary": "gasinfo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
             "get": {
                 "description": "get the status of server.",
                 "consumes": [
@@ -80,64 +158,6 @@
                     {
                         "description": "signature",
                         "name": "signature",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/register": {
-            "post": {
-                "description": "register a new user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "register"
-                ],
-                "summary": "register",
-                "parameters": [
-                    {
-                        "description": "walletAddress",
-                        "name": "walletAddress",
                         "in": "body",
                         "required": true,
                         "schema": {

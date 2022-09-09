@@ -89,10 +89,10 @@ func GetNonce() (string, error) {
 	return n.Text(10), nil
 }
 
-// register godoc
-// @Summary      register
+// code godoc
+// @Summary      code
 // @Description  register a new user
-// @Tags         register
+// @Tags         code
 // @Accept       json
 // @produce application/json
 // @param walletAddress body string true "walletAddress"
@@ -101,7 +101,7 @@ func GetNonce() (string, error) {
 // @Failure      400  {string}  StatusBadRequest
 // @Failure      404  {string}  StatusNotFound
 // @Failure      500  {string}  StatusInternalServerError
-// @Router       /register [POST]
+// @Router       /code [POST]
 func (server *Server) NonceHandler(c echo.Context) (err error) {
 	var p RegisterPayload
 
