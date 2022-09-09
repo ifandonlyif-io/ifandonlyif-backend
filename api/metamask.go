@@ -210,7 +210,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
-		return user, echo.NewHTTPError(http.StatusUnauthorized, err)
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
 	sig := hexutil.MustDecode(sigHex)
@@ -222,12 +222,12 @@ func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex s
 
 	if err != nil {
 		user.Nonce = sql.NullString{}
-		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
 	if user.WalletAddress.String != strings.ToLower(recoveredAddr.Hex()) {
-		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
 	// update the nonce here so that the signature cannot be resused

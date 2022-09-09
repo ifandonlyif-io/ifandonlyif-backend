@@ -48,6 +48,7 @@ func (server *Server) setupRouter() {
 
 	// Routes
 	e.Group("/auth").Use(server.AuthMiddleware)
+	e.GET("/gasinfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
 	e.GET("/", HealthCheck)
