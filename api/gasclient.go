@@ -16,13 +16,13 @@ type GasPrices struct {
 }
 
 func (server *Server) RunCronFetchGas() {
-	fmt.Println("AAAAAAAAAAAAAAAAA")
 
 	// Create a Resty Client
 	client := resty.New()
 
 	cronjob := cron.New()
-	spec := "0 0 * * * * ?" // everyhour
+	spec := "0 */1 * * * ?" // everyhour
+	// spec := "*/1 * * * * ?"  // every second
 	err := cronjob.AddFunc(spec, func() {
 
 		resp, err := client.R().
@@ -51,5 +51,6 @@ func (server *Server) RunCronFetchGas() {
 		return
 	}
 	cronjob.Start()
+	fmt.Println("Fetch Gas Cron Job Started !!!!")
 
 }
