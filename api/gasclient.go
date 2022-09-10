@@ -23,8 +23,7 @@ func (server *Server) RunCronFetchGas() {
 	client := resty.New()
 
 	cronjob := cron.New()
-	spec := "0 */1 * * *" // everyhour
-	//spec := "*/1 * * * *" // every second
+	spec := "0 * * * *" // everyhour
 	err := cronjob.AddFunc(spec, func() {
 
 		resp, err := client.R().
