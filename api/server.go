@@ -65,7 +65,7 @@ func (server *Server) Start(address string) error {
 // HealthCheck godoc
 // @Summary Show the status of server.
 // @Description get the status of server.
-// @Tags root
+// @Tags health
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
