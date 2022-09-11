@@ -52,14 +52,14 @@ func (server *Server) RunCronFetchGas() {
 
 }
 
-// gasinfo godoc
-// @Summary      gasinfo
+// gasInfo godoc
+// @Summary      gasInfo
 // @Description  get 24 hours gas prices
-// @Tags         gasinfo
+// @Tags         gasInfo
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /gasinfo [GET]
+// @Router       /gasInfo [GET]
 func (server *Server) GasHandler(c echo.Context) (err error) {
 	getGasInfo, err := server.store.GetAveragePriceByLastDay(context.Background())
 	if err != nil {
