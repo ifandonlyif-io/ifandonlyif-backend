@@ -34,7 +34,7 @@ const getAveragePriceByLastDay = `-- name: GetAveragePriceByLastDay :many
 `
 
 type GetAveragePriceByLastDayRow struct {
-	CreatedAt sql.NullTime  `json:"created_at"`
+	CreatedAt sql.NullTime  `json:"createdAt"`
 	Average   sql.NullInt32 `json:"average"`
 }
 

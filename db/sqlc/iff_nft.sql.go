@@ -26,12 +26,12 @@ INSERT INTO iff_nfts (
 `
 
 type CreateIffNftParams struct {
-	ProjectID                  int64     `json:"project_id"`
-	UserWalletAddress          string    `json:"user_wallet_address"`
-	NftProjectsContractAddress string    `json:"nft_projects_contract_address"`
-	NftProjectsCollectionName  string    `json:"nft_projects_collection_name"`
-	MintDate                   time.Time `json:"mint_date"`
-	MintTransaction            string    `json:"mint_transaction"`
+	ProjectID                  int64     `json:"projectID"`
+	UserWalletAddress          string    `json:"userWalletAddress"`
+	NftProjectsContractAddress string    `json:"nftProjectsContractAddress"`
+	NftProjectsCollectionName  string    `json:"nftProjectsCollectionName"`
+	MintDate                   time.Time `json:"mintDate"`
+	MintTransaction            string    `json:"mintTransaction"`
 }
 
 func (q *Queries) CreateIffNft(ctx context.Context, arg CreateIffNftParams) (IffNft, error) {

@@ -22,8 +22,8 @@ INSERT INTO report_blocklists (
 `
 
 type CreateReportBlocklistParams struct {
-	HttpAddress       string         `json:"http_address"`
-	UserWalletAddress sql.NullString `json:"user_wallet_address"`
+	HttpAddress       string         `json:"httpAddress"`
+	UserWalletAddress sql.NullString `json:"userWalletAddress"`
 }
 
 func (q *Queries) CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error) {
@@ -128,7 +128,7 @@ RETURNING id, http_address, verified_at, user_wallet_address, created_at
 
 type UpdateReportBlocklistVerifiedParams struct {
 	ID         uuid.UUID    `json:"id"`
-	VerifiedAt sql.NullTime `json:"verified_at"`
+	VerifiedAt sql.NullTime `json:"verifiedAt"`
 }
 
 func (q *Queries) UpdateReportBlocklistVerified(ctx context.Context, arg UpdateReportBlocklistVerifiedParams) (ReportBlocklist, error) {

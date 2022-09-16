@@ -67,6 +67,6 @@ func (server *Server) GasHandler(c echo.Context) (err error) {
 	}
 	//SnakeCaseToCamelCase(getGasInfo[0])
 	// font.SnakeCaseToCamelCase(getGasInfo[0].Average)
-	// font.SnakeCaseToCamelCase(getGasInfo[0].CreatedAt)
+	// fmt.Println(font.SnakeCaseToCamelCase(getGasInfo[0].CreatedAt.Time.String()))
 	return c.JSON(http.StatusAccepted, getGasInfo)
 }
