@@ -12,7 +12,7 @@ import (
 )
 
 type GasPrice struct {
-	ID        uuid.UUID     `json:"id"`
+	ID        int64         `json:"id"`
 	Average   sql.NullInt32 `json:"average"`
 	CreatedAt sql.NullTime  `json:"created_at"`
 }
