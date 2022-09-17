@@ -16,6 +16,7 @@ require (
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
+	gopkg.in/guregu/null.v4 v4.0.0 // indirect
 )
 
 require (

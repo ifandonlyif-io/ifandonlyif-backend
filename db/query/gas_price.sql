@@ -6,8 +6,8 @@ INSERT INTO gas_prices (
 ) RETURNING *;
 
 -- name: GetAveragePriceByLastDay :many
-  SELECT created_at,
-    average
+  SELECT COALESCE(created_at),
+  COALESCE(average)
   FROM gas_prices
   ORDER BY created_at DESC
   LIMIT 24;

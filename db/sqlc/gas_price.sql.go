@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createGasPrice = `-- name: CreateGasPrice :one
@@ -26,16 +27,16 @@ func (q *Queries) CreateGasPrice(ctx context.Context, average sql.NullInt32) (Ga
 }
 
 const getAveragePriceByLastDay = `-- name: GetAveragePriceByLastDay :many
-  SELECT created_at,
-    average
+  SELECT COALESCE(created_at),
+  COALESCE(average)
   FROM gas_prices
   ORDER BY created_at DESC
   LIMIT 24
 `
 
 type GetAveragePriceByLastDayRow struct {
-	CreatedAt sql.NullTime  `json:"createdAt"`
-	Average   sql.NullInt32 `json:"average"`
+	CreatedAt time.Time `json:"createdAt"`
+	Average   int32     `json:"average"`
 }
 
 func (q *Queries) GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error) {
