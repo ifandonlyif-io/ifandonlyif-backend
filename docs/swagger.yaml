@@ -1,5 +1,5 @@
 basePath: /
-host: localhost:8080
+host: localhost:1323
 info:
   contact:
     email: support@swagger.io
@@ -51,8 +51,10 @@ paths:
       summary: code
       tags:
       - code
-  /gasinfo:
+  /gasInfo:
     get:
+      consumes:
+      - '*/*'
       description: get 24 hours gas prices
       produces:
       - application/json
@@ -61,9 +63,9 @@ paths:
           description: OK
           schema:
             type: string
-      summary: gasinfo
+      summary: gasInfo
       tags:
-      - gasinfo
+      - gasInfo
   /health:
     get:
       consumes:
@@ -79,7 +81,7 @@ paths:
             type: object
       summary: Show the status of server.
       tags:
-      - root
+      - health
   /login:
     post:
       consumes:

@@ -83,16 +83,19 @@ const docTemplate = `{
                 }
             }
         },
-        "/gasinfo": {
+        "/gasInfo": {
             "get": {
                 "description": "get 24 hours gas prices",
+                "consumes": [
+                    "*/*"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "gasinfo"
+                    "gasInfo"
                 ],
-                "summary": "gasinfo",
+                "summary": "gasInfo",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -113,7 +116,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "health"
                 ],
                 "summary": "Show the status of server.",
                 "responses": {

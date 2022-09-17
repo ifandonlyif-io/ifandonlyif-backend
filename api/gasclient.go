@@ -65,8 +65,5 @@ func (server *Server) GasHandler(c echo.Context) (err error) {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
-	//SnakeCaseToCamelCase(getGasInfo[0])
-	// font.SnakeCaseToCamelCase(getGasInfo[0].Average)
-	// fmt.Println(font.SnakeCaseToCamelCase(getGasInfo[0].CreatedAt.Time.String()))
 	return c.JSON(http.StatusAccepted, getGasInfo)
 }

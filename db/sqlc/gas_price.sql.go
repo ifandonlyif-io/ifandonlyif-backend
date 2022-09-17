@@ -27,16 +27,16 @@ func (q *Queries) CreateGasPrice(ctx context.Context, average sql.NullInt32) (Ga
 }
 
 const getAveragePriceByLastDay = `-- name: GetAveragePriceByLastDay :many
-  SELECT COALESCE(created_at),
-  COALESCE(average)
+  SELECT COALESCE(average),
+  COALESCE(created_at)
   FROM gas_prices
   ORDER BY created_at DESC
   LIMIT 24
 `
 
 type GetAveragePriceByLastDayRow struct {
-	CreatedAt time.Time `json:"createdAt"`
 	Average   int32     `json:"average"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (q *Queries) GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error) {
@@ -48,7 +48,7 @@ func (q *Queries) GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePri
 	items := []GetAveragePriceByLastDayRow{}
 	for rows.Next() {
 		var i GetAveragePriceByLastDayRow
-		if err := rows.Scan(&i.CreatedAt, &i.Average); err != nil {
+		if err := rows.Scan(&i.Average, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
