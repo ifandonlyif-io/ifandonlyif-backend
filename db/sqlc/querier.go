@@ -12,6 +12,7 @@ import (
 )
 
 type Querier interface {
+	CreateGasPrice(ctx context.Context, average sql.NullInt32) (GasPrice, error)
 	CreateIffNft(ctx context.Context, arg CreateIffNftParams) (IffNft, error)
 	CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error)
 	CreateReportWhitelist(ctx context.Context, arg CreateReportWhitelistParams) (ReportWhitelist, error)
@@ -19,6 +20,7 @@ type Querier interface {
 	DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 	DeleteReportWhitelist(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
+	GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error)
 	GetIffNftForUpdate(ctx context.Context, id uuid.UUID) (IffNft, error)
 	GetIffNfts(ctx context.Context, id uuid.UUID) (IffNft, error)
 	GetReportBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
@@ -36,6 +38,7 @@ type Querier interface {
 	UpdateReportWhitelisVerified(ctx context.Context, arg UpdateReportWhitelisVerifiedParams) (ReportWhitelist, error)
 	UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error)
 	UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDateParams) (User, error)
+	UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error)
 	UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error)
 }
 

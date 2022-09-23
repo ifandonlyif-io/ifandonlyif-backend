@@ -27,12 +27,12 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	FullName      sql.NullString `json:"full_name"`
-	WalletAddress sql.NullString `json:"wallet_address"`
-	CountryCode   sql.NullString `json:"country_code"`
-	EmailAddress  sql.NullString `json:"email_address"`
-	TwitterName   sql.NullString `json:"twitter_name"`
-	ImageUri      sql.NullString `json:"image_uri"`
+	FullName      sql.NullString `json:"fullName"`
+	WalletAddress sql.NullString `json:"walletAddress"`
+	CountryCode   sql.NullString `json:"countryCode"`
+	EmailAddress  sql.NullString `json:"emailAddress"`
+	TwitterName   sql.NullString `json:"twitterName"`
+	ImageUri      sql.NullString `json:"imageUri"`
 	Nonce         sql.NullString `json:"nonce"`
 }
 
@@ -156,7 +156,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	items := []User{}
 	for rows.Next() {
 		var i User
 		if err := rows.Scan(
@@ -194,7 +194,7 @@ RETURNING id, full_name, wallet_address, created_at, country_code, email_address
 
 type UpdateUserEmailAddressParams struct {
 	ID           uuid.UUID      `json:"id"`
-	EmailAddress sql.NullString `json:"email_address"`
+	EmailAddress sql.NullString `json:"emailAddress"`
 }
 
 func (q *Queries) UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error) {
@@ -225,11 +225,42 @@ RETURNING id, full_name, wallet_address, created_at, country_code, email_address
 
 type UpdateUserKycDateParams struct {
 	ID      uuid.UUID    `json:"id"`
-	KycDate sql.NullTime `json:"kyc_date"`
+	KycDate sql.NullTime `json:"kycDate"`
 }
 
 func (q *Queries) UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDateParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUserKycDate, arg.ID, arg.KycDate)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.WalletAddress,
+		&i.CreatedAt,
+		&i.CountryCode,
+		&i.EmailAddress,
+		&i.KycDate,
+		&i.TwitterName,
+		&i.BlockpassID,
+		&i.ImageUri,
+		&i.Nonce,
+	)
+	return i, err
+}
+
+const updateUserNonce = `-- name: UpdateUserNonce :one
+UPDATE users
+SET nonce = $2
+WHERE wallet_address = $1
+RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+`
+
+type UpdateUserNonceParams struct {
+	WalletAddress sql.NullString `json:"walletAddress"`
+	Nonce         sql.NullString `json:"nonce"`
+}
+
+func (q *Queries) UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserNonce, arg.WalletAddress, arg.Nonce)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -256,7 +287,7 @@ RETURNING id, full_name, wallet_address, created_at, country_code, email_address
 
 type UpdateUserTwitterNameParams struct {
 	ID          uuid.UUID      `json:"id"`
-	TwitterName sql.NullString `json:"twitter_name"`
+	TwitterName sql.NullString `json:"twitterName"`
 }
 
 func (q *Queries) UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error) {

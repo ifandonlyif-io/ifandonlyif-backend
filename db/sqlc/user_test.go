@@ -31,3 +31,10 @@ func TestCreateUser(t *testing.T) {
 	require.NotZero(t, user.ID)
 	require.NotZero(t, user.CreatedAt)
 }
+
+func TestGetUserByWallet(t *testing.T) {
+
+	user, err := testQueries.GetUserByWalletAddress(context.Background(), sql.NullString{util.RandomWalletAddress(), true})
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+}

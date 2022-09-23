@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ifandonlyif-api-deployment
+  labels:
+    app: ifandonlyif-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ifandonlyif-api
+  template:
+    metadata:
+      labels:
+        app: ifandonlyif-api
+    spec:
+      containers:
+      - name: ifandonlyif-api
+        image: 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+

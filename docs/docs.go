@@ -25,7 +25,88 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
+        "/code": {
+            "post": {
+                "description": "register a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "code"
+                ],
+                "summary": "code",
+                "parameters": [
+                    {
+                        "description": "walletAddress",
+                        "name": "walletAddress",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/gasInfo": {
+            "get": {
+                "description": "get 24 hours gas prices",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gasInfo"
+                ],
+                "summary": "gasInfo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
             "get": {
                 "description": "get the status of server.",
                 "consumes": [
@@ -35,7 +116,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "health"
                 ],
                 "summary": "Show the status of server.",
                 "responses": {
@@ -49,9 +130,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/createUser": {
+        "/login": {
             "post": {
-                "description": "create user by params",
+                "description": "login",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,58 +140,49 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "createUser"
+                    "login"
                 ],
-                "summary": "Create An User",
+                "summary": "login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "fullName",
-                        "name": "fullName",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "walletAddress",
                         "name": "walletAddress",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "countryCode",
-                        "name": "countryCode",
-                        "in": "formData",
-                        "required": true
+                        "description": "nonce",
+                        "name": "nonce",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "emailAddress",
-                        "name": "emailAddress",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "twitterName",
-                        "name": "twitterName",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "imageUri",
-                        "name": "imageUri",
-                        "in": "formData",
-                        "required": true
+                        "description": "signature",
+                        "name": "signature",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.userResponse"
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -134,18 +206,13 @@ const docTemplate = `{
                 }
             }
         }
-    },
-    "definitions": {
-        "api.userResponse": {
-            "type": "object"
-        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:1323",
+	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{"http"},
 	Title:            "Ifandonlyif API",

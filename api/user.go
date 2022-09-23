@@ -58,6 +58,7 @@ func newUserResponse(user db.User) userResponse {
 // @Failure      404  {string}  StatusNotFound
 // @Failure      500  {string}  StatusInternalServerError
 // @Router       /createUser [POST]
+
 func (server *Server) createUser(c echo.Context) error {
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{

@@ -1,7 +1,4 @@
 basePath: /
-definitions:
-  api.userResponse:
-    type: object
 host: localhost:1323
 info:
   contact:
@@ -16,7 +13,60 @@ info:
   title: Ifandonlyif API
   version: "1.0"
 paths:
-  /:
+  /code:
+    post:
+      consumes:
+      - application/json
+      description: register a new user
+      parameters:
+      - description: walletAddress
+        in: body
+        name: walletAddress
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: code
+      tags:
+      - code
+  /gasInfo:
+    get:
+      consumes:
+      - '*/*'
+      description: get 24 hours gas prices
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: gasInfo
+      tags:
+      - gasInfo
+  /health:
     get:
       consumes:
       - '*/*'
@@ -31,50 +81,42 @@ paths:
             type: object
       summary: Show the status of server.
       tags:
-      - root
-  /createUser:
+      - health
+  /login:
     post:
       consumes:
       - application/json
-      description: create user by params
+      description: login
       parameters:
-      - description: fullName
-        in: formData
-        name: fullName
-        required: true
-        type: string
       - description: walletAddress
-        in: formData
+        in: body
         name: walletAddress
         required: true
-        type: string
-      - description: countryCode
-        in: formData
-        name: countryCode
+        schema:
+          type: string
+      - description: nonce
+        in: body
+        name: nonce
         required: true
-        type: string
-      - description: emailAddress
-        in: formData
-        name: emailAddress
+        schema:
+          type: string
+      - description: signature
+        in: body
+        name: signature
         required: true
-        type: string
-      - description: twitterName
-        in: formData
-        name: twitterName
-        required: true
-        type: string
-      - description: imageUri
-        in: formData
-        name: imageUri
-        required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.userResponse'
+            type: string
+        "201":
+          description: Created
+          schema:
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -87,9 +129,9 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Create An User
+      summary: login
       tags:
-      - createUser
+      - login
 schemes:
 - http
 swagger: "2.0"
