@@ -133,7 +133,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	}
 
 	if len(user.Nonce.String) > 0 {
-		return c.JSON(http.StatusFound, resCode)
+		return c.JSON(http.StatusOK, resCode)
 	}
 
 	nonce, err := GetNonce()
