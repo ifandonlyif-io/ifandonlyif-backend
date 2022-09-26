@@ -165,7 +165,6 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 // @Accept       json
 // @produce application/json
 // @param walletAddress body string true "walletAddress"
-// @param nonce body string true "nonce"
 // @param signature body string true "signature"
 // @Success      200  {string}  StatusOK
 // @Success      201  {string}  StatusOK
