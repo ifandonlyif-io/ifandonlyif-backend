@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
+	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -37,8 +38,8 @@ type RegisterPayload struct {
 }
 
 type SigninPayload struct {
-	WalletAddress string `json:"address"`
-	Signature     string `json:"Signature"`
+	WalletAddress string `json:"walletAddress"`
+	Signature     string `json:"signature"`
 }
 
 func (p RegisterPayload) Validate() error {
@@ -186,8 +187,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
 
-	address := strings.ToLower(p.WalletAddress)
-	user, err := Authenticate(server, c, address, p.Signature)
+	user, err := Authenticate(server, c, p.WalletAddress, p.Signature)
 	switch err {
 	case nil:
 	case ErrAuthError:
@@ -208,11 +208,12 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 }
 
 func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
+	fmt.Println(walletAddress)
+	fmt.Println(sigHex)
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
 		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
-
 	sig := hexutil.MustDecode(sigHex)
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
