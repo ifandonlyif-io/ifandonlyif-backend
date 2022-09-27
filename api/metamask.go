@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
-	"github.com/ifandonlyif-io/ifandonlyif-backend/token"
 	"github.com/labstack/echo/v4"
 )
 
@@ -114,7 +112,8 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
-
+	fmt.Print(p.WalletAddress)
+	fmt.Print(sql.NullString{String: p.WalletAddress, Valid: true})
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
 	// return (echo.NewHTTPError(http.StatusInternalServerError, user))
 	if err != nil && err != sql.ErrNoRows {
@@ -127,12 +126,11 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	// if err != nil {
 	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
 	// }
-
 	resCode := &code{
-		Code: user.Nonce.String,
+		Code: user.Nonce,
 	}
 
-	if len(user.Nonce.String) > 0 {
+	if len(user.Nonce) > 0 {
 		return c.JSON(http.StatusOK, resCode)
 	}
 
@@ -144,6 +142,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
 		WalletAddress: sql.NullString{String: p.WalletAddress, Valid: true},
 		Nonce:         sql.NullString{String: nonce, Valid: true},
+		FullName:      sql.NullString{String: "", Valid: true},
 	})
 
 	// return echo.NewHTTPError(http.StatusAccepted, createUser)
@@ -175,7 +174,6 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 func (server *Server) LoginHandler(c echo.Context) (err error) {
 
 	var p SigninPayload
-	var tokenMaker token.Maker
 	var duration time.Duration
 
 	if err = (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
@@ -195,7 +193,8 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	token, _, err := tokenMaker.CreateToken(user.FullName.String, duration)
+	duration = time.Hour
+	token, _, err := server.tokenMaker.CreateToken(user.FullName, duration)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
@@ -206,28 +205,29 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resToken)
 }
 
-func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
+func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.GetUserByWalletAddressRow, error) {
 	fmt.Println(walletAddress)
 	fmt.Println(sigHex)
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
-		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, err)
+
+		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 	sig := hexutil.MustDecode(sigHex)
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
 	sig[crypto.RecoveryIDOffset] -= 27
-	msg := accounts.TextHash([]byte(user.Nonce.String))
+	msg := accounts.TextHash([]byte(user.Nonce))
 	recovered, err := crypto.SigToPub(msg, sig)
 
 	if err != nil {
-		user.Nonce = sql.NullString{}
-		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
+		user.Nonce = ""
+		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
-	if user.WalletAddress.String != strings.ToLower(recoveredAddr.Hex()) {
-		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+	if user.WalletAddress != recoveredAddr.Hex() {
+		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
 	// update the nonce here so that the signature cannot be resused
@@ -235,11 +235,11 @@ func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex s
 	if err != nil {
 		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidNonce)
 	}
-	user.Nonce.String = nonce
+	user.Nonce = nonce
 
 	server.store.UpdateUserNonce(c.Request().Context(), db.UpdateUserNonceParams{
-		WalletAddress: user.WalletAddress,
-		Nonce:         user.Nonce,
+		WalletAddress: sql.NullString{String: user.WalletAddress, Valid: true},
+		Nonce:         sql.NullString{String: user.Nonce, Valid: true},
 	})
 
 	return user, nil
