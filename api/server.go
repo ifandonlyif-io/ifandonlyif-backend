@@ -54,6 +54,10 @@ func (server *Server) setupRouter() {
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
+	e.GET("/nft", server.getNFTs)
+	e.POST("/nft", server.createNFT)
+	e.POST("discord/report", server.report)
+	e.GET("discord/nfts", server.getReportNFTs)
 	server.Echo = e
 }
 
