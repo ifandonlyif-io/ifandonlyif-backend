@@ -20,4 +20,4 @@ server:
 	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown proto test network server
+.PHONY: network postgres createdb dropdb migrateup migratedown sqlc test server proto test server

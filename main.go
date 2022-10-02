@@ -43,6 +43,7 @@ func main() {
 	store := db.NewStore(conn)
 
 	runEchoServer(config, store)
+
 }
 
 func runDBMigration(migrationURL string, dbSource string) {
@@ -60,6 +61,7 @@ func runDBMigration(migrationURL string, dbSource string) {
 
 func runEchoServer(config util.Config, store db.Store) {
 	server, err := api.NewServer(config, store)
+
 	if err != nil {
 		log.Fatal("cannot create server:", err)
 	}

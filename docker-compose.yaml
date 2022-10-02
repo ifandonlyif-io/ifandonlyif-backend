@@ -6,6 +6,8 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=iffdev
+    ports:
+      - "5432:5432"
   api:
     build:
       context: .
@@ -24,3 +26,4 @@ services:
         "/app/start.sh"
       ]
     command: [ "/app/main" ]
+

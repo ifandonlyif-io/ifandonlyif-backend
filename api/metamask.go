@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
-	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -39,7 +38,6 @@ type RegisterPayload struct {
 
 type SigninPayload struct {
 	WalletAddress string `json:"address"`
-	Nonce         string `json:"nonce"`
 	Signature     string `json:"Signature"`
 }
 
@@ -53,9 +51,6 @@ func (p RegisterPayload) Validate() error {
 func (s SigninPayload) Validate() error {
 	if !hexRegex.MatchString(s.WalletAddress) {
 		return ErrInvalidAddress
-	}
-	if !nonceRegex.MatchString(s.Nonce) {
-		return ErrInvalidNonce
 	}
 	if len(s.Signature) == 0 {
 		return ErrMissingSig
@@ -94,10 +89,10 @@ func GetNonce() (string, error) {
 	return n.Text(10), nil
 }
 
-// register godoc
-// @Summary      register
+// code godoc
+// @Summary      code
 // @Description  register a new user
-// @Tags         register
+// @Tags         code
 // @Accept       json
 // @produce application/json
 // @param walletAddress body string true "walletAddress"
@@ -106,17 +101,38 @@ func GetNonce() (string, error) {
 // @Failure      400  {string}  StatusBadRequest
 // @Failure      404  {string}  StatusNotFound
 // @Failure      500  {string}  StatusInternalServerError
-// @Router       /register [POST]
-func (server *Server) RegisterHandler(c echo.Context) (err error) {
+// @Router       /code [POST]
+func (server *Server) NonceHandler(c echo.Context) (err error) {
 	var p RegisterPayload
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	fmt.Println(p.WalletAddress)
 
-	if err := p.Validate(); err != nil {
+	err = p.Validate()
+	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
+	}
+
+	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
+	// return (echo.NewHTTPError(http.StatusInternalServerError, user))
+	if err != nil && err != sql.ErrNoRows {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	// if err == sql.ErrNoRows {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, ErrUserNotExists)
+	// }
+
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
+
+	resCode := &code{
+		Code: user.Nonce.String,
+	}
+
+	if len(user.Nonce.String) > 0 {
+		return c.JSON(http.StatusFound, resCode)
 	}
 
 	nonce, err := GetNonce()
@@ -125,15 +141,16 @@ func (server *Server) RegisterHandler(c echo.Context) (err error) {
 	}
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
-		WalletAddress: sql.NullString{String: strings.ToLower(p.WalletAddress), Valid: true},
+		WalletAddress: sql.NullString{String: p.WalletAddress, Valid: true},
 		Nonce:         sql.NullString{String: nonce, Valid: true},
 	})
 
+	// return echo.NewHTTPError(http.StatusAccepted, createUser)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, ErrUserExists)
 	}
 
-	resCode := &code{
+	resCode = &code{
 		Code: createUser.Nonce.String,
 	}
 
@@ -170,11 +187,11 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	}
 
 	address := strings.ToLower(p.WalletAddress)
-	user, err := Authenticate(server, c, address, p.Nonce, p.Signature)
+	user, err := Authenticate(server, c, address, p.Signature)
 	switch err {
 	case nil:
 	case ErrAuthError:
-		return echo.NewHTTPError(http.StatusUnauthorized)
+		return echo.NewHTTPError(http.StatusUnauthorized, ErrAuthError)
 	default:
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
@@ -190,34 +207,33 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resToken)
 }
 
-func Authenticate(server *Server, c echo.Context, walletAddress string, nonce string, sigHex string) (db.User, error) {
+func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.User, error) {
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
-		return user, err
-	}
-	if user.Nonce.String != nonce {
-		return user, ErrAuthError
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
 	sig := hexutil.MustDecode(sigHex)
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
 	sig[crypto.RecoveryIDOffset] -= 27
-	msg := accounts.TextHash([]byte(nonce))
+	msg := accounts.TextHash([]byte(user.Nonce.String))
 	recovered, err := crypto.SigToPub(msg, sig)
+
 	if err != nil {
-		return user, err
+		user.Nonce = sql.NullString{}
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
 	if user.WalletAddress.String != strings.ToLower(recoveredAddr.Hex()) {
-		return user, ErrAuthError
+		return db.User{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
 	// update the nonce here so that the signature cannot be resused
-	nonce, err = GetNonce()
+	nonce, err := GetNonce()
 	if err != nil {
-		return user, err
+		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidNonce)
 	}
 	user.Nonce.String = nonce
 

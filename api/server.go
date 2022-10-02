@@ -33,8 +33,8 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		store:      store,
 		tokenMaker: tokenMaker,
 	}
-
 	server.setupRouter()
+	server.RunCronFetchGas()
 	return server, nil
 }
 
@@ -46,15 +46,12 @@ func (server *Server) setupRouter() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	// e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-	// 	AllowOrigins: []string{"https://labstack.com", "https://labstack.net"},
-	// 	AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	// }))
-
-	// e.POST("/createuser", server.createUser)
-	e.POST("/code", server.RegisterHandler)
+	// Routes
+	e.Group("/auth").Use(server.AuthMiddleware)
+	e.GET("/gasInfo", server.GasHandler)
+	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	e.GET("/", HealthCheck)
+	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
 	e.GET("/nft", server.getNFTs)
@@ -72,11 +69,11 @@ func (server *Server) Start(address string) error {
 // HealthCheck godoc
 // @Summary Show the status of server.
 // @Description get the status of server.
-// @Tags root
+// @Tags health
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router / [get]
+// @Router /health [get]
 func HealthCheck(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": "Server is up and running",

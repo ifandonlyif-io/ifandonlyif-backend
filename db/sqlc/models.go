@@ -11,49 +11,55 @@ import (
 	"github.com/google/uuid"
 )
 
+type GasPrice struct {
+	ID        int64         `json:"id"`
+	Average   sql.NullInt32 `json:"average"`
+	CreatedAt sql.NullTime  `json:"createdAt"`
+}
+
 type IffNft struct {
 	ID                         uuid.UUID `json:"id"`
-	ProjectID                  int64     `json:"project_id"`
-	UserWalletAddress          string    `json:"user_wallet_address"`
-	NftProjectsContractAddress string    `json:"nft_projects_contract_address"`
-	NftProjectsCollectionName  string    `json:"nft_projects_collection_name"`
-	MintDate                   time.Time `json:"mint_date"`
-	MintTransaction            string    `json:"mint_transaction"`
+	ProjectID                  int64     `json:"projectID"`
+	UserWalletAddress          string    `json:"userWalletAddress"`
+	NftProjectsContractAddress string    `json:"nftProjectsContractAddress"`
+	NftProjectsCollectionName  string    `json:"nftProjectsCollectionName"`
+	MintDate                   time.Time `json:"mintDate"`
+	MintTransaction            string    `json:"mintTransaction"`
 }
 
 type NftProject struct {
 	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`
-	ContractAddress string    `json:"contract_address"`
-	CollectionName  string    `json:"collection_name"`
+	ContractAddress string    `json:"contractAddress"`
+	CollectionName  string    `json:"collectionName"`
 }
 
 type ReportBlocklist struct {
 	ID                uuid.UUID      `json:"id"`
-	HttpAddress       string         `json:"http_address"`
-	VerifiedAt        sql.NullTime   `json:"verified_at"`
-	UserWalletAddress sql.NullString `json:"user_wallet_address"`
-	CreatedAt         time.Time      `json:"created_at"`
+	HttpAddress       string         `json:"httpAddress"`
+	VerifiedAt        sql.NullTime   `json:"verifiedAt"`
+	UserWalletAddress sql.NullString `json:"userWalletAddress"`
+	CreatedAt         time.Time      `json:"createdAt"`
 }
 
 type ReportWhitelist struct {
 	ID                uuid.UUID      `json:"id"`
-	HttpAddress       string         `json:"http_address"`
-	VerifiedAt        sql.NullTime   `json:"verified_at"`
-	UserWalletAddress sql.NullString `json:"user_wallet_address"`
-	CreatedAt         time.Time      `json:"created_at"`
+	HttpAddress       string         `json:"httpAddress"`
+	VerifiedAt        sql.NullTime   `json:"verifiedAt"`
+	UserWalletAddress sql.NullString `json:"userWalletAddress"`
+	CreatedAt         time.Time      `json:"createdAt"`
 }
 
 type User struct {
 	ID            uuid.UUID      `json:"id"`
-	FullName      sql.NullString `json:"full_name"`
-	WalletAddress sql.NullString `json:"wallet_address"`
-	CreatedAt     sql.NullTime   `json:"created_at"`
-	CountryCode   sql.NullString `json:"country_code"`
-	EmailAddress  sql.NullString `json:"email_address"`
-	KycDate       sql.NullTime   `json:"kyc_date"`
-	TwitterName   sql.NullString `json:"twitter_name"`
-	BlockpassID   sql.NullInt64  `json:"blockpass_id"`
-	ImageUri      sql.NullString `json:"image_uri"`
+	FullName      sql.NullString `json:"fullName"`
+	WalletAddress sql.NullString `json:"walletAddress"`
+	CreatedAt     sql.NullTime   `json:"createdAt"`
+	CountryCode   sql.NullString `json:"countryCode"`
+	EmailAddress  sql.NullString `json:"emailAddress"`
+	KycDate       sql.NullTime   `json:"kycDate"`
+	TwitterName   sql.NullString `json:"twitterName"`
+	BlockpassID   sql.NullInt64  `json:"blockpassID"`
+	ImageUri      sql.NullString `json:"imageUri"`
 	Nonce         sql.NullString `json:"nonce"`
 }

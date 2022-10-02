@@ -2,7 +2,7 @@ CREATE TABLE "users" (
   "id" uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   "full_name" varchar,
   "wallet_address" varchar UNIQUE ,
-  "created_at" timestamptz DEFAULT 'now()',
+  "created_at" timestamptz DEFAULT now(),
   "country_code" varchar,
   "email_address" varchar,
   "kyc_date" timestamptz,
@@ -25,7 +25,7 @@ CREATE TABLE "report_blocklists" (
   "http_address" varchar NOT NULL,
   "verified_at" timestamptz,
   "user_wallet_address" varchar,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE "report_whitelists" (
@@ -33,7 +33,7 @@ CREATE TABLE "report_whitelists" (
   "http_address" varchar NOT NULL,
   "verified_at" timestamptz,
   "user_wallet_address" varchar,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE "nft_projects" (
