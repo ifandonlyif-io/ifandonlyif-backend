@@ -24,7 +24,7 @@ func (server *Server) RunCronFetchGas() {
 	cronjob := cron.New()
 
 	// cronjob.AddFunc("@hourly", func() {
-	cronjob.AddFunc("*/1 * * * *", func() {
+	cronjob.AddFunc("0 * * * *", func() {
 		resp, err := client.R().
 			EnableTrace().
 			Get("https://ethgasstation.info/api/ethgasAPI.json")

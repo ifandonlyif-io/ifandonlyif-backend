@@ -202,6 +202,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	resToken := &accessToken{
 		AccessToken: token,
 	}
+	fmt.Print("resToken:", resToken)
 	return c.JSON(http.StatusCreated, resToken)
 }
 
