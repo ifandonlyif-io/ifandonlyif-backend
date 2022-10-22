@@ -4,7 +4,7 @@ services:
     image: postgres:14-alpine
     environment:
       - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=secret
+      - POSTGRES_PASSWORD=shie!Ng%6H
       - POSTGRES_DB=iffdev
     ports:
       - "5432:5432"
@@ -15,7 +15,7 @@ services:
     ports:
       - "8080:1323"
     environment:
-      - DB_SOURCE=postgresql://root:secret@postgres:5432/iffdev?sslmode=disable
+      - DB_SOURCE=postgresql://root:shie!Ng%6H@postgres:5432/iffdev?sslmode=disable
     depends_on:
       - postgres
     entrypoint:
