@@ -3,7 +3,7 @@ DB_URL=postgresql://root:secret@localhost:5432/iffdev?sslmode=disable
 network:
 	docker network create iffdev-network
 postgres:
-	docker run --name postgres14 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:14-alpine
+	docker run --name postgres14 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=shie!Ng%6H -d postgres:14-alpine
 createdb:
 	docker exec postgres14 createdb --username=root --owner=root iffdev
 dropdb:
