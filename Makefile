@@ -1,4 +1,4 @@
-DB_URL=postgresql://root:secret@localhost:5432/iffdev?sslmode=disable
+DB_URL=postgresql://root:shie!Ng%6H@localhost:5432/iffdev?sslmode=disable
 
 network:
 	docker network create iffdev-network
