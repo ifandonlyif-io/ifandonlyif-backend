@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -74,13 +75,28 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+select ID, COALESCE(full_name),COALESCE(wallet_address),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
+FROM users
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
+type GetUserRow struct {
+	ID            uuid.UUID `json:"id"`
+	FullName      string    `json:"fullName"`
+	WalletAddress string    `json:"walletAddress"`
+	CreatedAt     time.Time `json:"createdAt"`
+	CountryCode   string    `json:"countryCode"`
+	EmailAddress  string    `json:"emailAddress"`
+	KycDate       time.Time `json:"kycDate"`
+	TwitterName   string    `json:"twitterName"`
+	BlockpassID   int64     `json:"blockpassID"`
+	ImageUri      string    `json:"imageUri"`
+	Nonce         string    `json:"nonce"`
+}
+
+func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
-	var i User
+	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
@@ -98,31 +114,33 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const getUserByWalletAddress = `-- name: GetUserByWalletAddress :one
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+select ID,COALESCE(full_name),COALESCE(wallet_address),COALESCE(nonce)
+FROM users
 WHERE wallet_address = $1 LIMIT 1
 `
 
-func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (User, error) {
+type GetUserByWalletAddressRow struct {
+	ID            uuid.UUID `json:"id"`
+	FullName      string    `json:"fullName"`
+	WalletAddress string    `json:"walletAddress"`
+	Nonce         string    `json:"nonce"`
+}
+
+func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (GetUserByWalletAddressRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByWalletAddress, walletAddress)
-	var i User
+	var i GetUserByWalletAddressRow
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
 		&i.WalletAddress,
-		&i.CreatedAt,
-		&i.CountryCode,
-		&i.EmailAddress,
-		&i.KycDate,
-		&i.TwitterName,
-		&i.BlockpassID,
-		&i.ImageUri,
 		&i.Nonce,
 	)
 	return i, err
 }
 
 const getUserForUpdate = `-- name: GetUserForUpdate :one
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+select id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+FROM users
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -147,7 +165,8 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce FROM users
+select id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+FROM users
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {

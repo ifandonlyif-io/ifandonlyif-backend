@@ -12,20 +12,24 @@ INSERT INTO users (
 ) RETURNING *;
 
 -- name: GetUser :one
-SELECT * FROM users
+select ID, COALESCE(full_name),COALESCE(wallet_address),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
+FROM users
 WHERE id = $1 LIMIT 1;
 
 -- name: GetUserByWalletAddress :one
-SELECT * FROM users
+select ID,COALESCE(full_name),COALESCE(wallet_address),COALESCE(nonce)
+FROM users
 WHERE wallet_address = $1 LIMIT 1;
 
 -- name: GetUserForUpdate :one
-SELECT * FROM users
+select *
+FROM users
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE;
 
 -- name: ListUsers :many
-SELECT * FROM users;
+select *
+FROM users;
 
 -- name: UpdateUserEmailAddress :one
 UPDATE users
