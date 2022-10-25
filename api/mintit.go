@@ -23,12 +23,11 @@ type FetchNftPayload struct {
 // @Router       /fetchUserNfts [GET]
 func (server *Server) FetchUserNfts(c echo.Context) (err error) {
 	var f FetchNftPayload
-	fmt.Println("fetchusernft")
-	fmt.Print(c.Get(AuthorizationPayloadKey))
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &f); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+
 	// Create a Resty Client
 	client := resty.New()
 	client.Header.Add("accept", "application/json")

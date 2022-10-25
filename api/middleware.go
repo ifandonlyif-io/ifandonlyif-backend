@@ -46,7 +46,6 @@ func (server *Server) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		fmt.Println("middleware")
 
 		ctx.Set(AuthorizationPayloadKey, payload)
 		ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)

@@ -194,6 +194,8 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	}
 
 	duration = time.Hour
+	fmt.Println("Create token at LoginHandler")
+	fmt.Println(user.WalletAddress)
 	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.WalletAddress, duration)
 
 	if err != nil {

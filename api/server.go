@@ -13,7 +13,7 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-// Server serves HTTP requests for our banking service.
+// Server serves HTTP requests for our nft-platform service.
 type Server struct {
 	config     util.Config
 	store      db.Store
