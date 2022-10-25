@@ -13,7 +13,7 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-// Server serves HTTP requests for our banking service.
+// Server serves HTTP requests for our nft-platform service.
 type Server struct {
 	config     util.Config
 	store      db.Store
@@ -47,12 +47,11 @@ func (server *Server) setupRouter() {
 	e.Use(middleware.CORS())
 
 	// Routes
-	e.Group("/auth").Use(server.AuthMiddleware)
+	auth := e.Group("/auth", server.AuthMiddleware)
 	e.GET("/gasInfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	e.POST("/fetchUserNft", server.FetchUserNfts)
-	e.POST("/auth/fetchUserNft", server.FetchUserNfts)
+	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)

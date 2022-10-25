@@ -194,7 +194,9 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	}
 
 	duration = time.Hour
-	token, _, err := server.tokenMaker.CreateToken(user.FullName, duration)
+	fmt.Println("Create token at LoginHandler")
+	fmt.Println(user.WalletAddress)
+	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.WalletAddress, duration)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
@@ -207,8 +209,6 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 }
 
 func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.GetUserByWalletAddressRow, error) {
-	fmt.Println(walletAddress)
-	fmt.Println(sigHex)
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
 	if err != nil {
 
