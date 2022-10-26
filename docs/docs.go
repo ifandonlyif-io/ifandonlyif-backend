@@ -25,6 +25,86 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/getAllBlockLists": {
+            "get": {
+                "description": "get all blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "getAllBlockLists"
+                ],
+                "summary": "getAllBlockLists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getBlockListById": {
+            "post": {
+                "description": "get blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "getBlockListById"
+                ],
+                "summary": "getBlockListById",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/fetchUserNfts": {
+            "post": {
+                "description": "get mintable USER NFTS",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fetchUserNfts"
+                ],
+                "summary": "fetchUserNfts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/code": {
             "post": {
                 "description": "register a new user",
@@ -154,15 +234,6 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "description": "nonce",
-                        "name": "nonce",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "description": "signature",
                         "name": "signature",
                         "in": "body",
@@ -212,7 +283,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:1323",
 	BasePath:         "/",
 	Schemes:          []string{"http"},
 	Title:            "Ifandonlyif API",

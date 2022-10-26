@@ -13,6 +13,58 @@ info:
   title: Ifandonlyif API
   version: "1.0"
 paths:
+  /api/getAllBlockLists:
+    get:
+      consumes:
+      - '*/*'
+      description: get all blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: getAllBlockLists
+      tags:
+      - getAllBlockLists
+  /api/getBlockListById:
+    post:
+      consumes:
+      - '*/*'
+      description: get blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: getBlockListById
+      tags:
+      - getBlockListById
+  /auth/fetchUserNfts:
+    post:
+      consumes:
+      - '*/*'
+      description: get mintable USER NFTS
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: fetchUserNfts
+      tags:
+      - fetchUserNfts
   /code:
     post:
       consumes:
@@ -91,12 +143,6 @@ paths:
       - description: walletAddress
         in: body
         name: walletAddress
-        required: true
-        schema:
-          type: string
-      - description: nonce
-        in: body
-        name: nonce
         required: true
         schema:
           type: string
