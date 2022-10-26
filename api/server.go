@@ -46,19 +46,32 @@ func (server *Server) setupRouter() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
+	api := e.Group("/api", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
+		KeyLookup: "header:api-key",
+		Validator: func(key string, c echo.Context) (bool, error) {
+			return key == "valid-key", nil
+		},
+	}))
+
 	// Routes
 	auth := e.Group("/auth", server.AuthMiddleware)
 	e.GET("/gasInfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/nft", server.getNFTs)
-	e.POST("/nft", server.createNFT)
+  e.GET("/nft", server.getNFTs)// unused
+	e.POST("/nft", server.createNFT)// unused
 	e.POST("discord/report", server.report)
 	e.GET("discord/nfts", server.getReportNFTs)
+
+	// JWT - Authentication Middleware
+	auth.POST("/fetchUserNft", server.FetchUserNfts)
+	// Key - Authentication Middleware
+	api.GET("/getAllBlockLists", server.GetAllBlockLists)
+	api.POST("/getBlockListById", server.GetBlockListById)
+
 	server.Echo = e
 }
 

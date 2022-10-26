@@ -21,12 +21,10 @@ type FetchNftPayload struct {
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /fetchUserNfts [GET]
+// @Router       /auth/fetchUserNfts [POST]
 func (server *Server) FetchUserNfts(c echo.Context) (err error) {
 
 	payload, ok := c.Get(AuthorizationPayloadKey).(*token.Payload)
-
-	fmt.Println(payload.WalletAddress)
 
 	if !ok {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid type for KEY")
