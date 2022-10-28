@@ -61,11 +61,17 @@ func (server *Server) setupRouter() {
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
+  e.GET("/nft", server.getNFTs)// unused
+	e.POST("/nft", server.createNFT)// unused
+	e.POST("discord/report", server.report)
+	e.GET("discord/nfts", server.getReportNFTs)
+
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
 	api.POST("/getBlockListById", server.GetBlockListById)
+
 	server.Echo = e
 }
 
