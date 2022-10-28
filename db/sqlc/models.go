@@ -28,10 +28,11 @@ type IffNft struct {
 }
 
 type NftProject struct {
-	ID              uuid.UUID `json:"id"`
-	Name            string    `json:"name"`
-	ContractAddress string    `json:"contractAddress"`
-	CollectionName  string    `json:"collectionName"`
+	ID              uuid.UUID      `json:"id"`
+	Name            string         `json:"name"`
+	ContractAddress string         `json:"contractAddress"`
+	CollectionName  string         `json:"collectionName"`
+	ImageUri        sql.NullString `json:"imageUri"`
 }
 
 type ReportBlocklist struct {
@@ -40,6 +41,7 @@ type ReportBlocklist struct {
 	VerifiedAt        sql.NullTime   `json:"verifiedAt"`
 	UserWalletAddress sql.NullString `json:"userWalletAddress"`
 	CreatedAt         time.Time      `json:"createdAt"`
+	DisprovedAt       sql.NullTime   `json:"disprovedAt"`
 }
 
 type ReportWhitelist struct {
@@ -48,6 +50,17 @@ type ReportWhitelist struct {
 	VerifiedAt        sql.NullTime   `json:"verifiedAt"`
 	UserWalletAddress sql.NullString `json:"userWalletAddress"`
 	CreatedAt         time.Time      `json:"createdAt"`
+}
+
+type Session struct {
+	ID            uuid.UUID `json:"id"`
+	WalletAddress string    `json:"walletAddress"`
+	RefreshToken  string    `json:"refreshToken"`
+	UserAgent     string    `json:"userAgent"`
+	ClientIp      string    `json:"clientIp"`
+	IsBlocked     bool      `json:"isBlocked"`
+	ExpiresAt     time.Time `json:"expiresAt"`
+	CreatedAt     time.Time `json:"createdAt"`
 }
 
 type User struct {
