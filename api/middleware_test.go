@@ -17,10 +17,10 @@ func addAuthorization(
 	tokenMaker token.Maker,
 	authorizationType string,
 	username string,
-	walletaddress string,
+	wallet string,
 	duration time.Duration,
 ) {
-	token, payload, err := tokenMaker.CreateToken(username, walletaddress, duration)
+	token, payload, err := tokenMaker.CreateToken(username, wallet, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
