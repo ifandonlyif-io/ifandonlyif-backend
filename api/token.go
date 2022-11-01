@@ -48,7 +48,7 @@ func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 	}
 
 	if session.WalletAddress != refreshPayload.WalletAddress {
-		err := fmt.Errorf("incorrect session walletAddress")
+		err := fmt.Errorf("incorrect session wallet")
 		ctx.JSON(http.StatusUnauthorized, err)
 		return
 	}

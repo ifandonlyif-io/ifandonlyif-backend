@@ -11,7 +11,7 @@ import (
 )
 
 type FetchNftPayload struct {
-	WalletAddress string `json:"walletAddress"`
+	WalletAddress string `json:"wallet"`
 }
 
 // mintit godoc
