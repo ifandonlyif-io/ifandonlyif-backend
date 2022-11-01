@@ -71,9 +71,9 @@ paths:
       - application/json
       description: register a new user
       parameters:
-      - description: walletAddress
+      - description: wallet
         in: body
-        name: walletAddress
+        name: wallet
         required: true
         schema:
           type: string
@@ -140,9 +140,9 @@ paths:
       - application/json
       description: login
       parameters:
-      - description: walletAddress
+      - description: wallet
         in: body
-        name: walletAddress
+        name: wallet
         required: true
         schema:
           type: string

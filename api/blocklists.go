@@ -47,7 +47,7 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 
 	blocklist, errGetList := server.store.GetReportBlocklist(c.Request().Context(), p.UUID)
 
-	if err != nil {
+	if errGetList != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
 	}
 

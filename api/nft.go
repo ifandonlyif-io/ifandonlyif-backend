@@ -1,11 +1,12 @@
 package api
 
 import (
-	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 	"time"
+
+	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
+	"github.com/labstack/echo/v4"
 )
 
 func (server *Server) getNFTs(c echo.Context) error {
@@ -22,7 +23,7 @@ func (server Server) createNFT(e echo.Context) error {
 
 	created, err := server.store.CreateIffNft(e.Request().Context(), db.CreateIffNftParams{
 		ProjectID:                  parseInt,
-		UserWalletAddress:          e.FormValue("walletAddress"),
+		UserWalletAddress:          e.FormValue("wallet"),
 		NftProjectsContractAddress: e.FormValue("projectContractAddress"),
 		NftProjectsCollectionName:  e.FormValue("collectionName"),
 		MintDate:                   time.Now(),

@@ -16,6 +16,7 @@ type Querier interface {
 	CreateIffNft(ctx context.Context, arg CreateIffNftParams) (IffNft, error)
 	CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error)
 	CreateReportWhitelist(ctx context.Context, arg CreateReportWhitelistParams) (ReportWhitelist, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 	DeleteReportWhitelist(ctx context.Context, id uuid.UUID) error
@@ -27,6 +28,7 @@ type Querier interface {
 	GetReportBlocklistUpdate(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
 	GetReportWhitelis(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetReportWhitelistUpdate(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 	GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (GetUserByWalletAddressRow, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)

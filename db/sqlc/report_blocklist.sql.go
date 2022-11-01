@@ -18,7 +18,7 @@ INSERT INTO report_blocklists (
   user_wallet_address
 ) VALUES (
   $1, $2
-) RETURNING id, http_address, verified_at, user_wallet_address, created_at
+) RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
 `
 
 type CreateReportBlocklistParams struct {
@@ -35,6 +35,7 @@ func (q *Queries) CreateReportBlocklist(ctx context.Context, arg CreateReportBlo
 		&i.VerifiedAt,
 		&i.UserWalletAddress,
 		&i.CreatedAt,
+		&i.DisprovedAt,
 	)
 	return i, err
 }
@@ -50,7 +51,7 @@ func (q *Queries) DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 }
 
 const getReportBlocklist = `-- name: GetReportBlocklist :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
 WHERE id = $1 LIMIT 1
 `
 
@@ -63,12 +64,13 @@ func (q *Queries) GetReportBlocklist(ctx context.Context, id uuid.UUID) (ReportB
 		&i.VerifiedAt,
 		&i.UserWalletAddress,
 		&i.CreatedAt,
+		&i.DisprovedAt,
 	)
 	return i, err
 }
 
 const getReportBlocklistUpdate = `-- name: GetReportBlocklistUpdate :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -82,12 +84,13 @@ func (q *Queries) GetReportBlocklistUpdate(ctx context.Context, id uuid.UUID) (R
 		&i.VerifiedAt,
 		&i.UserWalletAddress,
 		&i.CreatedAt,
+		&i.DisprovedAt,
 	)
 	return i, err
 }
 
 const listReportBlocklists = `-- name: ListReportBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
 `
 
 func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error) {
@@ -105,6 +108,7 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 			&i.VerifiedAt,
 			&i.UserWalletAddress,
 			&i.CreatedAt,
+			&i.DisprovedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -123,7 +127,7 @@ const updateReportBlocklistVerified = `-- name: UpdateReportBlocklistVerified :o
 UPDATE report_blocklists
 SET verified_at = $2
 WHERE id = $1
-RETURNING id, http_address, verified_at, user_wallet_address, created_at
+RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
 `
 
 type UpdateReportBlocklistVerifiedParams struct {
@@ -140,6 +144,7 @@ func (q *Queries) UpdateReportBlocklistVerified(ctx context.Context, arg UpdateR
 		&i.VerifiedAt,
 		&i.UserWalletAddress,
 		&i.CreatedAt,
+		&i.DisprovedAt,
 	)
 	return i, err
 }

@@ -15,11 +15,11 @@ func TestJWTMaker(t *testing.T) {
 
 	username := util.RandomOwner()
 	duration := time.Minute
-	walletAddress := util.RandomWalletAddress()
+	wallet := util.RandomWalletAddress()
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
 
-	token, payload, err := maker.CreateToken(username, walletAddress, duration)
+	token, payload, err := maker.CreateToken(username, wallet, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 	require.NotEmpty(t, payload)
@@ -30,7 +30,7 @@ func TestJWTMaker(t *testing.T) {
 
 	require.NotZero(t, payload.ID)
 	require.Equal(t, username, payload.UserName)
-	require.Equal(t, walletAddress, payload.WalletAddress)
+	require.Equal(t, wallet, payload.WalletAddress)
 	require.WithinDuration(t, issuedAt, payload.IssuedAt, time.Second)
 	require.WithinDuration(t, expiredAt, payload.ExpiredAt, time.Second)
 }

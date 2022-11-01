@@ -19,7 +19,7 @@ import (
 )
 
 type User struct {
-	WalletAddress string `json:"walletAddress"`
+	WalletAddress string `json:"wallet"`
 	Nonce         string `json:"nonce"`
 }
 
@@ -32,11 +32,11 @@ type accessToken struct {
 }
 
 type RegisterPayload struct {
-	WalletAddress string `json:"walletAddress"`
+	WalletAddress string `json:"wallet"`
 }
 
 type SigninPayload struct {
-	WalletAddress string `json:"walletAddress"`
+	WalletAddress string `json:"wallet"`
 	Signature     string `json:"signature"`
 }
 
@@ -94,7 +94,7 @@ func GetNonce() (string, error) {
 // @Tags         code
 // @Accept       json
 // @produce application/json
-// @param walletAddress body string true "walletAddress"
+// @param wallet body string true "wallet"
 // @Success      200  {string}  StatusOK
 // @Success      201  {string}  StatusOK
 // @Failure      400  {string}  StatusBadRequest
@@ -163,7 +163,7 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 // @Tags         login
 // @Accept       json
 // @produce application/json
-// @param walletAddress body string true "walletAddress"
+// @param wallet body string true "wallet"
 // @param signature body string true "signature"
 // @Success      200  {string}  StatusOK
 // @Success      201  {string}  StatusOK
@@ -208,8 +208,8 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, resToken)
 }
 
-func Authenticate(server *Server, c echo.Context, walletAddress string, sigHex string) (db.GetUserByWalletAddressRow, error) {
-	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: walletAddress, Valid: true})
+func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) (db.GetUserByWalletAddressRow, error) {
+	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: wallet, Valid: true})
 	if err != nil {
 
 		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, err)

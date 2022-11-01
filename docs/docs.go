@@ -120,8 +120,8 @@ const docTemplate = `{
                 "summary": "code",
                 "parameters": [
                     {
-                        "description": "walletAddress",
-                        "name": "walletAddress",
+                        "description": "wallet",
+                        "name": "wallet",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -225,8 +225,8 @@ const docTemplate = `{
                 "summary": "login",
                 "parameters": [
                     {
-                        "description": "walletAddress",
-                        "name": "walletAddress",
+                        "description": "wallet",
+                        "name": "wallet",
                         "in": "body",
                         "required": true,
                         "schema": {
