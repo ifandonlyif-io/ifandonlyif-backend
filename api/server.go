@@ -58,6 +58,7 @@ func (server *Server) setupRouter() {
 	e.GET("/gasInfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
+	e.POST("/tokens/renew_access", server.renewAccessToken)
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
