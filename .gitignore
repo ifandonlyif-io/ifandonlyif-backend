@@ -8,3 +8,4 @@ test.env
 go-echo-boilerplate
 .DS_Store
 .vscode/*
+.app.env

@@ -3,8 +3,8 @@ services:
   postgres:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=au0Fohb9Sohneu9yohvee2Ji
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - POSTGRES_DB=iffdev
     ports:
       - "5432:5432"
@@ -15,7 +15,7 @@ services:
     ports:
       - "8080:1323"
     environment:
-      - DB_SOURCE=postgresql://root:au0Fohb9Sohneu9yohvee2Ji@postgres:5432/iffdev?sslmode=disable
+      - DB_SOURCE=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/iffdev?sslmode=disable
     depends_on:
       - postgres
     entrypoint:
