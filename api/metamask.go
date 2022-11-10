@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"regexp"
 	"sync"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -174,12 +173,13 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 func (server *Server) LoginHandler(c echo.Context) (err error) {
 
 	var p SigninPayload
-	var duration time.Duration
 
+	// parse payload
 	if err = (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	// validate
 	if err = p.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
@@ -193,10 +193,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	duration = time.Hour
-	fmt.Println("Create token at LoginHandler")
-	fmt.Println(user.WalletAddress)
-	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.WalletAddress, duration)
+	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.WalletAddress, server.config.AccessTokenDuration)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
@@ -204,7 +201,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	resToken := &accessToken{
 		AccessToken: token,
 	}
-	fmt.Print("resToken:", resToken)
+
 	return c.JSON(http.StatusCreated, resToken)
 }
 
