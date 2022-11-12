@@ -8,7 +8,7 @@ import (
 )
 
 type GetListPayload struct {
-	UUID uuid.UUID `json:"code"`
+	UUID uuid.UUID `json:"uuid"`
 }
 
 // blocklists godoc
