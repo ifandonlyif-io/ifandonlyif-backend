@@ -15,7 +15,7 @@ import (
 const createSession = `-- name: CreateSession :one
 INSERT INTO sessions (
   id,
-  wallet_address,
+  wallet,
   refresh_token,
   user_agent,
   client_ip,
@@ -23,23 +23,23 @@ INSERT INTO sessions (
   expires_at
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, wallet_address, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at
+) RETURNING id, wallet, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at
 `
 
 type CreateSessionParams struct {
-	ID            uuid.UUID `json:"id"`
-	WalletAddress string    `json:"walletAddress"`
-	RefreshToken  string    `json:"refreshToken"`
-	UserAgent     string    `json:"userAgent"`
-	ClientIp      string    `json:"clientIp"`
-	IsBlocked     bool      `json:"isBlocked"`
-	ExpiresAt     time.Time `json:"expiresAt"`
+	ID           uuid.UUID `json:"id"`
+	Wallet       string    `json:"wallet"`
+	RefreshToken string    `json:"refreshToken"`
+	UserAgent    string    `json:"userAgent"`
+	ClientIp     string    `json:"clientIp"`
+	IsBlocked    bool      `json:"isBlocked"`
+	ExpiresAt    time.Time `json:"expiresAt"`
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRowContext(ctx, createSession,
 		arg.ID,
-		arg.WalletAddress,
+		arg.Wallet,
 		arg.RefreshToken,
 		arg.UserAgent,
 		arg.ClientIp,
@@ -49,7 +49,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 	var i Session
 	err := row.Scan(
 		&i.ID,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.RefreshToken,
 		&i.UserAgent,
 		&i.ClientIp,
@@ -61,7 +61,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 }
 
 const getSession = `-- name: GetSession :one
-SELECT id, wallet_address, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at FROM sessions
+SELECT id, wallet, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at FROM sessions
 WHERE id = $1 LIMIT 1
 `
 
@@ -70,7 +70,7 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	var i Session
 	err := row.Scan(
 		&i.ID,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.RefreshToken,
 		&i.UserAgent,
 		&i.ClientIp,

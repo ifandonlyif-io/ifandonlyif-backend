@@ -30,7 +30,7 @@ type Querier interface {
 	GetReportWhitelistUpdate(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
-	GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (GetUserByWalletAddressRow, error)
+	GetUserByWalletAddress(ctx context.Context, wallet sql.NullString) (GetUserByWalletAddressRow, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)
 	ListIffNfts(ctx context.Context) ([]IffNft, error)
 	ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error)

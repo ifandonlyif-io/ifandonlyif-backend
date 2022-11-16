@@ -53,26 +53,26 @@ type ReportWhitelist struct {
 }
 
 type Session struct {
-	ID            uuid.UUID `json:"id"`
-	WalletAddress string    `json:"walletAddress"`
-	RefreshToken  string    `json:"refreshToken"`
-	UserAgent     string    `json:"userAgent"`
-	ClientIp      string    `json:"clientIp"`
-	IsBlocked     bool      `json:"isBlocked"`
-	ExpiresAt     time.Time `json:"expiresAt"`
-	CreatedAt     time.Time `json:"createdAt"`
+	ID           uuid.UUID `json:"id"`
+	Wallet       string    `json:"wallet"`
+	RefreshToken string    `json:"refreshToken"`
+	UserAgent    string    `json:"userAgent"`
+	ClientIp     string    `json:"clientIp"`
+	IsBlocked    bool      `json:"isBlocked"`
+	ExpiresAt    time.Time `json:"expiresAt"`
+	CreatedAt    time.Time `json:"createdAt"`
 }
 
 type User struct {
-	ID            uuid.UUID      `json:"id"`
-	FullName      sql.NullString `json:"fullName"`
-	WalletAddress sql.NullString `json:"walletAddress"`
-	CreatedAt     sql.NullTime   `json:"createdAt"`
-	CountryCode   sql.NullString `json:"countryCode"`
-	EmailAddress  sql.NullString `json:"emailAddress"`
-	KycDate       sql.NullTime   `json:"kycDate"`
-	TwitterName   sql.NullString `json:"twitterName"`
-	BlockpassID   sql.NullInt64  `json:"blockpassID"`
-	ImageUri      sql.NullString `json:"imageUri"`
-	Nonce         sql.NullString `json:"nonce"`
+	ID           uuid.UUID      `json:"id"`
+	FullName     sql.NullString `json:"fullName"`
+	Wallet       sql.NullString `json:"wallet"`
+	CreatedAt    sql.NullTime   `json:"createdAt"`
+	CountryCode  sql.NullString `json:"countryCode"`
+	EmailAddress sql.NullString `json:"emailAddress"`
+	KycDate      sql.NullTime   `json:"kycDate"`
+	TwitterName  sql.NullString `json:"twitterName"`
+	BlockpassID  sql.NullInt64  `json:"blockpassID"`
+	ImageUri     sql.NullString `json:"imageUri"`
+	Nonce        sql.NullString `json:"nonce"`
 }

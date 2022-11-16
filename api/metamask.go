@@ -18,8 +18,8 @@ import (
 )
 
 type User struct {
-	WalletAddress string `json:"wallet"`
-	Nonce         string `json:"nonce"`
+	Wallet string `json:"wallet"`
+	Nonce  string `json:"nonce"`
 }
 
 type code struct {
@@ -31,23 +31,23 @@ type accessToken struct {
 }
 
 type RegisterPayload struct {
-	WalletAddress string `json:"wallet"`
+	Wallet string `json:"wallet"`
 }
 
 type SigninPayload struct {
-	WalletAddress string `json:"wallet"`
-	Signature     string `json:"signature"`
+	Wallet    string `json:"wallet"`
+	Signature string `json:"signature"`
 }
 
 func (p RegisterPayload) Validate() error {
-	if !hexRegex.MatchString(p.WalletAddress) {
+	if !hexRegex.MatchString(p.Wallet) {
 		return ErrInvalidAddress
 	}
 	return nil
 }
 
 func (s SigninPayload) Validate() error {
-	if !hexRegex.MatchString(s.WalletAddress) {
+	if !hexRegex.MatchString(s.Wallet) {
 		return ErrInvalidAddress
 	}
 	if len(s.Signature) == 0 {
@@ -111,9 +111,9 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
-	fmt.Print(p.WalletAddress)
-	fmt.Print(sql.NullString{String: p.WalletAddress, Valid: true})
-	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.WalletAddress, Valid: true})
+	fmt.Print(p.Wallet)
+	fmt.Print(sql.NullString{String: p.Wallet, Valid: true})
+	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.Wallet, Valid: true})
 	// return (echo.NewHTTPError(http.StatusInternalServerError, user))
 	if err != nil && err != sql.ErrNoRows {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -139,9 +139,9 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	}
 
 	createUser, err := server.store.CreateUser(c.Request().Context(), db.CreateUserParams{
-		WalletAddress: sql.NullString{String: p.WalletAddress, Valid: true},
-		Nonce:         sql.NullString{String: nonce, Valid: true},
-		FullName:      sql.NullString{String: "", Valid: true},
+		Wallet:   sql.NullString{String: p.Wallet, Valid: true},
+		Nonce:    sql.NullString{String: nonce, Valid: true},
+		FullName: sql.NullString{String: "", Valid: true},
 	})
 
 	// return echo.NewHTTPError(http.StatusAccepted, createUser)
@@ -184,7 +184,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
 
-	user, err := Authenticate(server, c, p.WalletAddress, p.Signature)
+	user, err := Authenticate(server, c, p.Wallet, p.Signature)
 	switch err {
 	case nil:
 	case ErrAuthError:
@@ -193,7 +193,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.WalletAddress, server.config.AccessTokenDuration)
+	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.Wallet, server.config.AccessTokenDuration)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
@@ -224,7 +224,7 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
-	if user.WalletAddress != recoveredAddr.Hex() {
+	if user.Wallet != recoveredAddr.Hex() {
 		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
@@ -236,8 +236,8 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	user.Nonce = nonce
 
 	server.store.UpdateUserNonce(c.Request().Context(), db.UpdateUserNonceParams{
-		WalletAddress: sql.NullString{String: user.WalletAddress, Valid: true},
-		Nonce:         sql.NullString{String: user.Nonce, Valid: true},
+		Wallet: sql.NullString{String: user.Wallet, Valid: true},
+		Nonce:  sql.NullString{String: user.Nonce, Valid: true},
 	})
 
 	return user, nil
