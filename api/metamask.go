@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/accounts"
@@ -208,9 +209,9 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) (db.GetUserByWalletAddressRow, error) {
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: wallet, Valid: true})
 	if err != nil {
-
 		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
+	fmt.Print(user)
 	sig := hexutil.MustDecode(sigHex)
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
@@ -224,7 +225,7 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
-	if user.Wallet != recoveredAddr.Hex() {
+	if user.Wallet != strings.ToLower(recoveredAddr.Hex()) {
 		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 	}
 
@@ -233,6 +234,7 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	if err != nil {
 		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidNonce)
 	}
+
 	user.Nonce = nonce
 
 	server.store.UpdateUserNonce(c.Request().Context(), db.UpdateUserNonceParams{
