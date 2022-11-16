@@ -240,6 +240,15 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 			return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 		}
 	}
+	// check if Mixed with upper and lower
+	if !util.IsLower(user.Wallet) {
+		if !util.IsUpper(user.Wallet) {
+			// check the original address
+			if user.Wallet != recoveredAddr.Hex() {
+				return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+			}
+		}
+	}
 
 	// update the nonce here so that the signature cannot be resused
 	nonce, err := GetNonce()
