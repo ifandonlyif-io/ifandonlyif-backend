@@ -16,7 +16,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
   full_name,
-  wallet_address,
+  wallet,
   country_code,
   email_address,
   twitter_name,
@@ -24,23 +24,23 @@ INSERT INTO users (
   nonce
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+) RETURNING id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type CreateUserParams struct {
-	FullName      sql.NullString `json:"fullName"`
-	WalletAddress sql.NullString `json:"walletAddress"`
-	CountryCode   sql.NullString `json:"countryCode"`
-	EmailAddress  sql.NullString `json:"emailAddress"`
-	TwitterName   sql.NullString `json:"twitterName"`
-	ImageUri      sql.NullString `json:"imageUri"`
-	Nonce         sql.NullString `json:"nonce"`
+	FullName     sql.NullString `json:"fullName"`
+	Wallet       sql.NullString `json:"wallet"`
+	CountryCode  sql.NullString `json:"countryCode"`
+	EmailAddress sql.NullString `json:"emailAddress"`
+	TwitterName  sql.NullString `json:"twitterName"`
+	ImageUri     sql.NullString `json:"imageUri"`
+	Nonce        sql.NullString `json:"nonce"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.FullName,
-		arg.WalletAddress,
+		arg.Wallet,
 		arg.CountryCode,
 		arg.EmailAddress,
 		arg.TwitterName,
@@ -51,7 +51,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -75,23 +75,23 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUser = `-- name: GetUser :one
-select ID, COALESCE(full_name),COALESCE(wallet_address),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
+select ID, COALESCE(full_name),COALESCE(wallet),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
 FROM users
 WHERE id = $1 LIMIT 1
 `
 
 type GetUserRow struct {
-	ID            uuid.UUID `json:"id"`
-	FullName      string    `json:"fullName"`
-	WalletAddress string    `json:"walletAddress"`
-	CreatedAt     time.Time `json:"createdAt"`
-	CountryCode   string    `json:"countryCode"`
-	EmailAddress  string    `json:"emailAddress"`
-	KycDate       time.Time `json:"kycDate"`
-	TwitterName   string    `json:"twitterName"`
-	BlockpassID   int64     `json:"blockpassID"`
-	ImageUri      string    `json:"imageUri"`
-	Nonce         string    `json:"nonce"`
+	ID           uuid.UUID `json:"id"`
+	FullName     string    `json:"fullName"`
+	Wallet       string    `json:"wallet"`
+	CreatedAt    time.Time `json:"createdAt"`
+	CountryCode  string    `json:"countryCode"`
+	EmailAddress string    `json:"emailAddress"`
+	KycDate      time.Time `json:"kycDate"`
+	TwitterName  string    `json:"twitterName"`
+	BlockpassID  int64     `json:"blockpassID"`
+	ImageUri     string    `json:"imageUri"`
+	Nonce        string    `json:"nonce"`
 }
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error) {
@@ -100,7 +100,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -114,32 +114,32 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 }
 
 const getUserByWalletAddress = `-- name: GetUserByWalletAddress :one
-select ID,COALESCE(full_name),COALESCE(wallet_address),COALESCE(nonce)
+select ID,COALESCE(full_name),COALESCE(wallet),COALESCE(nonce)
 FROM users
-WHERE wallet_address = $1 LIMIT 1
+WHERE wallet = $1 LIMIT 1
 `
 
 type GetUserByWalletAddressRow struct {
-	ID            uuid.UUID `json:"id"`
-	FullName      string    `json:"fullName"`
-	WalletAddress string    `json:"walletAddress"`
-	Nonce         string    `json:"nonce"`
+	ID       uuid.UUID `json:"id"`
+	FullName string    `json:"fullName"`
+	Wallet   string    `json:"wallet"`
+	Nonce    string    `json:"nonce"`
 }
 
-func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (GetUserByWalletAddressRow, error) {
-	row := q.db.QueryRowContext(ctx, getUserByWalletAddress, walletAddress)
+func (q *Queries) GetUserByWalletAddress(ctx context.Context, wallet sql.NullString) (GetUserByWalletAddressRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByWalletAddress, wallet)
 	var i GetUserByWalletAddressRow
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.Nonce,
 	)
 	return i, err
 }
 
 const getUserForUpdate = `-- name: GetUserForUpdate :one
-select id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+select id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 FROM users
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
@@ -151,7 +151,7 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, err
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -165,7 +165,7 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, err
 }
 
 const listUsers = `-- name: ListUsers :many
-select id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+select id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 FROM users
 `
 
@@ -181,7 +181,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.FullName,
-			&i.WalletAddress,
+			&i.Wallet,
 			&i.CreatedAt,
 			&i.CountryCode,
 			&i.EmailAddress,
@@ -208,7 +208,7 @@ const updateUserEmailAddress = `-- name: UpdateUserEmailAddress :one
 UPDATE users
 SET email_address = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+RETURNING id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserEmailAddressParams struct {
@@ -222,7 +222,7 @@ func (q *Queries) UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmai
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -239,7 +239,7 @@ const updateUserKycDate = `-- name: UpdateUserKycDate :one
 UPDATE users
 SET kyc_date = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+RETURNING id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserKycDateParams struct {
@@ -253,7 +253,7 @@ func (q *Queries) UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDatePa
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -269,22 +269,22 @@ func (q *Queries) UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDatePa
 const updateUserNonce = `-- name: UpdateUserNonce :one
 UPDATE users
 SET nonce = $2
-WHERE wallet_address = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+WHERE wallet = $1
+RETURNING id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserNonceParams struct {
-	WalletAddress sql.NullString `json:"walletAddress"`
-	Nonce         sql.NullString `json:"nonce"`
+	Wallet sql.NullString `json:"wallet"`
+	Nonce  sql.NullString `json:"nonce"`
 }
 
 func (q *Queries) UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserNonce, arg.WalletAddress, arg.Nonce)
+	row := q.db.QueryRowContext(ctx, updateUserNonce, arg.Wallet, arg.Nonce)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,
@@ -301,7 +301,7 @@ const updateUserTwitterName = `-- name: UpdateUserTwitterName :one
 UPDATE users
 SET twitter_name = $2
 WHERE id = $1
-RETURNING id, full_name, wallet_address, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
+RETURNING id, full_name, wallet, created_at, country_code, email_address, kyc_date, twitter_name, blockpass_id, image_uri, nonce
 `
 
 type UpdateUserTwitterNameParams struct {
@@ -315,7 +315,7 @@ func (q *Queries) UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitt
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.WalletAddress,
+		&i.Wallet,
 		&i.CreatedAt,
 		&i.CountryCode,
 		&i.EmailAddress,

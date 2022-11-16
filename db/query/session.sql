@@ -1,7 +1,7 @@
 -- name: CreateSession :one
 INSERT INTO sessions (
   id,
-  wallet_address,
+  wallet,
   refresh_token,
   user_agent,
   client_ip,

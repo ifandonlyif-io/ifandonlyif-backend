@@ -1,7 +1,7 @@
 CREATE TABLE "users" (
   "id" uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   "full_name" varchar,
-  "wallet_address" varchar UNIQUE ,
+  "wallet" varchar UNIQUE ,
   "created_at" timestamptz DEFAULT now(),
   "country_code" varchar,
   "email_address" varchar,
@@ -43,7 +43,7 @@ CREATE TABLE "nft_projects" (
   "collection_name" varchar UNIQUE NOT NULL
 );
 
-CREATE INDEX ON "users" ("wallet_address");
+CREATE INDEX ON "users" ("wallet");
 
 CREATE INDEX ON "iff_nfts" ("user_wallet_address");
 
@@ -51,12 +51,12 @@ CREATE INDEX ON "report_blocklists" ("user_wallet_address");
 
 CREATE INDEX ON "report_whitelists" ("user_wallet_address");
 
-ALTER TABLE "iff_nfts" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet_address");
+ALTER TABLE "iff_nfts" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet");
 
 ALTER TABLE "iff_nfts" ADD FOREIGN KEY ("nft_projects_contract_address") REFERENCES "nft_projects" ("contract_address");
 
 ALTER TABLE "iff_nfts" ADD FOREIGN KEY ("nft_projects_collection_name") REFERENCES "nft_projects" ("collection_name");
 
-ALTER TABLE "report_blocklists" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet_address");
+ALTER TABLE "report_blocklists" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet");
 
-ALTER TABLE "report_whitelists" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet_address");
+ALTER TABLE "report_whitelists" ADD FOREIGN KEY ("user_wallet_address") REFERENCES "users" ("wallet");
