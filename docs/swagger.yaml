@@ -13,6 +13,28 @@ info:
   title: Ifandonlyif API
   version: "1.0"
 paths:
+  /api/fetchBlockListById:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: fetchBlockListById
+      tags:
+      - fetchBlockListById
   /api/getAllBlockLists:
     get:
       consumes:
@@ -28,28 +50,6 @@ paths:
       summary: getAllBlockLists
       tags:
       - getAllBlockLists
-  /api/getBlockListById:
-    post:
-      consumes:
-      - '*/*'
-      description: get blocklist by uuid
-      parameters:
-      - description: uuid
-        in: body
-        name: uuid
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: getBlockListById
-      tags:
-      - getBlockListById
   /auth/fetchUserNfts:
     post:
       consumes:
@@ -103,6 +103,28 @@ paths:
       summary: code
       tags:
       - code
+  /fetchBlockListByUri:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uri
+      parameters:
+      - description: uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: fetchBlockListByUri
+      tags:
+      - fetchBlockListByUri
   /gasInfo:
     get:
       consumes:

@@ -25,6 +25,40 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/fetchBlockListById": {
+            "post": {
+                "description": "fetch blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fetchBlockListById"
+                ],
+                "summary": "fetchBlockListById",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/getAllBlockLists": {
             "get": {
                 "description": "get all blocklists",
@@ -38,40 +72,6 @@ const docTemplate = `{
                     "getAllBlockLists"
                 ],
                 "summary": "getAllBlockLists",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/getBlockListById": {
-            "post": {
-                "description": "get blocklist by uuid",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "getBlockListById"
-                ],
-                "summary": "getBlockListById",
-                "parameters": [
-                    {
-                        "description": "uuid",
-                        "name": "uuid",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -156,6 +156,40 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/fetchBlockListByUri": {
+            "post": {
+                "description": "fetch blocklist by uri",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fetchBlockListByUri"
+                ],
+                "summary": "fetchBlockListByUri",
+                "parameters": [
+                    {
+                        "description": "uri",
+                        "name": "uri",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
