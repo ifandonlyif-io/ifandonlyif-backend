@@ -72,13 +72,13 @@ func (server *Server) setupRouter() {
 	e.POST("/nft", server.createNFT) // unused
 	e.POST("discord/report", server.report)
 	e.GET("discord/nfts", server.getReportNFTs)
+	e.POST("/fetchBlockListByUri", server.GetBlocklistByUri)
 
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
-	api.POST("/getBlockListById", server.GetBlockListById)
-
+	api.POST("/fetchBlockListById", server.GetBlockListById)
 	server.Echo = e
 }
 

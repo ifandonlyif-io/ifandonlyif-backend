@@ -27,3 +27,7 @@ RETURNING *;
 -- name: DeleteReportBlocklist :exec
 DELETE FROM report_blocklists
 WHERE id = $1;
+
+-- name: GetBlocklistByUri :one
+SELECT * FROM report_blocklists 
+WHERE http_address = $1;
