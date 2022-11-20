@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
+	"github.com/ifandonlyif-io/ifandonlyif-backend/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -225,8 +226,28 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
-	if user.Wallet != strings.ToLower(recoveredAddr.Hex()) {
-		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+	// check database string lower case
+	if util.IsLower(user.Wallet) {
+		// compare with lowercase from recovery
+		if user.Wallet != strings.ToLower(recoveredAddr.Hex()) {
+			return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+		}
+	}
+	// check database string upper case
+	if util.IsUpper(user.Wallet) {
+		// compare with lowercase from recovery
+		if user.Wallet != strings.ToUpper(recoveredAddr.Hex()) {
+			return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+		}
+	}
+	// check if Mixed with upper and lower
+	if !util.IsLower(user.Wallet) {
+		if !util.IsUpper(user.Wallet) {
+			// check the original address
+			if user.Wallet != recoveredAddr.Hex() {
+				return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
+			}
+		}
 	}
 
 	// update the nonce here so that the signature cannot be resused

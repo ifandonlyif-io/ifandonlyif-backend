@@ -44,7 +44,10 @@ func (server *Server) setupRouter() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://219.84.184.170", "http://219.85.184.145"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	api := e.Group("/api", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup: "header:api-key",
