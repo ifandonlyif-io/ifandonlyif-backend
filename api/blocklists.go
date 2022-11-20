@@ -63,7 +63,7 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 // @Summary      fetchBlockListByUri
 // @Description  fetch blocklist by uri
 // @Tags         fetchBlockListByUri
-// @param uuid body string true "uri"
+// @param uri body string true "uri"
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
