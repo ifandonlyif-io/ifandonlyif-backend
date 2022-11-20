@@ -50,6 +50,25 @@ func (q *Queries) DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 	return err
 }
 
+const getBlocklistByUri = `-- name: GetBlocklistByUri :one
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists 
+WHERE http_address = $1
+`
+
+func (q *Queries) GetBlocklistByUri(ctx context.Context, httpAddress string) (ReportBlocklist, error) {
+	row := q.db.QueryRowContext(ctx, getBlocklistByUri, httpAddress)
+	var i ReportBlocklist
+	err := row.Scan(
+		&i.ID,
+		&i.HttpAddress,
+		&i.VerifiedAt,
+		&i.UserWalletAddress,
+		&i.CreatedAt,
+		&i.DisprovedAt,
+	)
+	return i, err
+}
+
 const getReportBlocklist = `-- name: GetReportBlocklist :one
 SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
 WHERE id = $1 LIMIT 1

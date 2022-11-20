@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -9,6 +10,10 @@ import (
 
 type GetListPayload struct {
 	UUID uuid.UUID `json:"uuid"`
+}
+
+type CheckUriPayload struct {
+	Uri string `json:"uri"`
 }
 
 // blocklists godoc
@@ -29,14 +34,14 @@ func (server *Server) GetAllBlockLists(c echo.Context) (err error) {
 }
 
 // blocklists godoc
-// @Summary      getBlockListById
-// @Description  get blocklist by uuid
-// @Tags         getBlockListById
+// @Summary      fetchBlockListById
+// @Description  fetch blocklist by uuid
+// @Tags         fetchBlockListById
 // @param uuid body string true "uuid"
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /api/getBlockListById [POST]
+// @Router       /api/fetchBlockListById [POST]
 func (server *Server) GetBlockListById(c echo.Context) (err error) {
 
 	var p GetListPayload
@@ -46,6 +51,32 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 	}
 
 	blocklist, errGetList := server.store.GetReportBlocklist(c.Request().Context(), p.UUID)
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklist)
+}
+
+// blocklists godoc
+// @Summary      fetchBlockListByUri
+// @Description  fetch blocklist by uri
+// @Tags         fetchBlockListByUri
+// @param uuid body string true "uri"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /fetchBlockListByUri [POST]
+func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
+
+	var u CheckUriPayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &u); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+	fmt.Println(u.Uri)
+	blocklist, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
 
 	if errGetList != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errGetList)

@@ -22,6 +22,7 @@ type Querier interface {
 	DeleteReportWhitelist(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error)
+	GetBlocklistByUri(ctx context.Context, httpAddress string) (ReportBlocklist, error)
 	GetIffNftForUpdate(ctx context.Context, id uuid.UUID) (IffNft, error)
 	GetIffNfts(ctx context.Context, id uuid.UUID) (IffNft, error)
 	GetReportBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
