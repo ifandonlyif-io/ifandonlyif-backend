@@ -105,6 +105,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/checkUri": {
+            "post": {
+                "description": "fetch blocklist by uri",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "checkUri"
+                ],
+                "summary": "checkUri",
+                "parameters": [
+                    {
+                        "description": "uri",
+                        "name": "uri",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/code": {
             "post": {
                 "description": "register a new user",
@@ -156,40 +190,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/fetchBlockListByUri": {
-            "post": {
-                "description": "fetch blocklist by uri",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "fetchBlockListByUri"
-                ],
-                "summary": "fetchBlockListByUri",
-                "parameters": [
-                    {
-                        "description": "uri",
-                        "name": "uri",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }

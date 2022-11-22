@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -60,14 +61,14 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 }
 
 // blocklists godoc
-// @Summary      fetchBlockListByUri
+// @Summary      checkUri
 // @Description  fetch blocklist by uri
-// @Tags         fetchBlockListByUri
+// @Tags         checkUri
 // @param uri body string true "uri"
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /fetchBlockListByUri [POST]
+// @Router       /checkUri [POST]
 func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
 
 	var u CheckUriPayload
@@ -76,8 +77,9 @@ func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
 	}
 
-	_, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
+	test, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
 
+	fmt.Print(test)
 	if errGetList != nil {
 
 		if errGetList == sql.ErrNoRows {
