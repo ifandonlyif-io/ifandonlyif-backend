@@ -35,6 +35,14 @@ func (server Server) createNFT(e echo.Context) error {
 	return e.JSON(http.StatusCreated, created)
 }
 
+// nft godoc
+// @Summary      nftProjects
+// @Description  fetch limited nft projects
+// @Tags         nftProjects
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /nftProjects [GET]
 func (server *Server) ListNftProjects(c echo.Context) error {
 	nftprojs, err := server.store.ListNftProjects(c.Request().Context())
 	if err != nil {

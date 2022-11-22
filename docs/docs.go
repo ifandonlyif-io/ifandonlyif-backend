@@ -310,6 +310,29 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/nftProjects": {
+            "get": {
+                "description": "fetch limited nft projects",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "nftProjects"
+                ],
+                "summary": "nftProjects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`

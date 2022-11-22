@@ -200,6 +200,21 @@ paths:
       summary: login
       tags:
       - login
+  /nftProjects:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch limited nft projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: nftProjects
+      tags:
+      - nftProjects
 schemes:
 - http
 swagger: "2.0"
