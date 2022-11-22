@@ -109,12 +109,12 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	// validate wallet address
 	err = p.Validate()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
-	fmt.Print(p.Wallet)
-	fmt.Print(sql.NullString{String: p.Wallet, Valid: true})
+
 	user, err := server.store.GetUserByWalletAddress(c.Request().Context(), sql.NullString{String: p.Wallet, Valid: true})
 	// return (echo.NewHTTPError(http.StatusInternalServerError, user))
 	if err != nil && err != sql.ErrNoRows {

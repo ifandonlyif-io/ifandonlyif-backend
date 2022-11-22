@@ -34,3 +34,11 @@ func (server Server) createNFT(e echo.Context) error {
 	}
 	return e.JSON(http.StatusCreated, created)
 }
+
+func (server *Server) ListNftProjects(c echo.Context) error {
+	nftprojs, err := server.store.ListNftProjects(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusOK, nftprojs)
+}
