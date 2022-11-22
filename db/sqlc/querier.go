@@ -34,6 +34,7 @@ type Querier interface {
 	GetUserByWalletAddress(ctx context.Context, wallet sql.NullString) (GetUserByWalletAddressRow, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)
 	ListIffNfts(ctx context.Context) ([]IffNft, error)
+	ListNftProjects(ctx context.Context) ([]NftProject, error)
 	ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	ListReportWhitelist(ctx context.Context) ([]ReportWhitelist, error)
 	ListUsers(ctx context.Context) ([]User, error)

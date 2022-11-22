@@ -65,6 +65,28 @@ paths:
       summary: fetchUserNfts
       tags:
       - fetchUserNfts
+  /checkUri:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uri
+      parameters:
+      - description: uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: checkUri
+      tags:
+      - checkUri
   /code:
     post:
       consumes:
@@ -103,28 +125,6 @@ paths:
       summary: code
       tags:
       - code
-  /fetchBlockListByUri:
-    post:
-      consumes:
-      - '*/*'
-      description: fetch blocklist by uri
-      parameters:
-      - description: uri
-        in: body
-        name: uri
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: fetchBlockListByUri
-      tags:
-      - fetchBlockListByUri
   /gasInfo:
     get:
       consumes:
@@ -200,6 +200,21 @@ paths:
       summary: login
       tags:
       - login
+  /nftProjects:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch limited nft projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: nftProjects
+      tags:
+      - nftProjects
 schemes:
 - http
 swagger: "2.0"
