@@ -10,7 +10,7 @@ import (
 )
 
 type GetListPayload struct {
-	UUID uuid.UUID `json:"uuid"`
+	UUID string `json:"uuid"`
 }
 
 type CheckUriPayload struct {
@@ -51,7 +51,12 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
 	}
 
-	blocklist, errGetList := server.store.GetReportBlocklist(c.Request().Context(), p.UUID)
+	queryUuid, errUuid := uuid.Parse(p.UUID)
+	if errUuid != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errUuid)
+	}
+
+	blocklist, errGetList := server.store.GetReportBlocklist(c.Request().Context(), queryUuid)
 
 	if errGetList != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
