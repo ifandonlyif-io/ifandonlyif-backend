@@ -28,11 +28,11 @@ type IffNft struct {
 }
 
 type NftProject struct {
-	ID              uuid.UUID      `json:"id"`
-	Name            string         `json:"name"`
-	ContractAddress string         `json:"contractAddress"`
-	CollectionName  string         `json:"collectionName"`
-	ImageUri        sql.NullString `json:"imageUri"`
+	ID              uuid.UUID `json:"id"`
+	Name            string    `json:"name"`
+	ContractAddress string    `json:"contractAddress"`
+	CollectionName  string    `json:"collectionName"`
+	ImageUri        string    `json:"imageUri"`
 }
 
 type ReportBlocklist struct {
