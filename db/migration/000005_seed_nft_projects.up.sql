@@ -1,5 +1,5 @@
 ALTER TABLE nft_projects
-ADD COLUMN "image_uri" varchar;
+ADD COLUMN "image_uri" varchar NOT NULL;
 
 INSERT INTO nft_projects(name,contract_address, collection_name,image_uri)
 VALUES ('BAYC','0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D','Bored Ape Yacht Club','https://ik.imagekit.io/sfwl48klh/bayc_hDUqdjW4u.webp');
