@@ -1,4 +1,12 @@
 basePath: /
+definitions:
+  api.renewAccessTokenResponse:
+    properties:
+      accessToken:
+        type: string
+      accessTokenExpiresAt:
+        type: integer
+    type: object
 host: localhost:1323
 info:
   contact:
@@ -125,6 +133,21 @@ paths:
       summary: code
       tags:
       - code
+  /ethToUsd:
+    get:
+      consumes:
+      - '*/*'
+      description: get current 1 ETH to USD price
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ethToUsd
+      tags:
+      - ethToUsd
   /gasInfo:
     get:
       consumes:
@@ -215,6 +238,44 @@ paths:
       summary: nftProjects
       tags:
       - nftProjects
+  /renewAccess:
+    post:
+      consumes:
+      - application/json
+      description: renewAccess
+      parameters:
+      - description: refreshToken
+        in: body
+        name: refreshToken
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.renewAccessTokenResponse'
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: renewAccess
+      tags:
+      - renewAccess
 schemes:
 - http
 swagger: "2.0"

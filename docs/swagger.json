@@ -193,6 +193,29 @@
                 }
             }
         },
+        "/ethToUsd": {
+            "get": {
+                "description": "get current 1 ETH to USD price",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ethToUsd"
+                ],
+                "summary": "ethToUsd",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/gasInfo": {
             "get": {
                 "description": "get 24 hours gas prices",
@@ -327,6 +350,77 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        },
+        "/renewAccess": {
+            "post": {
+                "description": "renewAccess",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "renewAccess"
+                ],
+                "summary": "renewAccess",
+                "parameters": [
+                    {
+                        "description": "refreshToken",
+                        "name": "refreshToken",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.renewAccessTokenResponse"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.renewAccessTokenResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenExpiresAt": {
+                    "type": "integer"
                 }
             }
         }
