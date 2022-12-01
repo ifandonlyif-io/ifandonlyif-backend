@@ -64,7 +64,7 @@ func (server *Server) setupRouter() {
 	e.GET("/gasInfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	e.POST("/tokens/renew_access", server.renewAccessToken)
+	e.POST("/renewAccess", server.renewAccessToken)
 	e.GET("/health", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
@@ -74,6 +74,7 @@ func (server *Server) setupRouter() {
 	e.POST("discord/report", server.report)
 	e.GET("discord/nfts", server.getReportNFTs)
 	e.POST("/checkUri", server.GetBlocklistByUri)
+	e.GET("/ethToUsd", server.EthToUsd)
 
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
