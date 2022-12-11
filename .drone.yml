@@ -53,7 +53,7 @@ steps:
       registry:
         from_secret: AWS_REPO_IFFF
       dockerfile: ./Dockerfile
-      repo: backend
+      repo: ifandonlyifdev-backend
       region:
         from_secret: AWS_REGION
       tags:
@@ -76,7 +76,7 @@ steps:
       registry:
         from_secret: AWS_REPO_IFFF
       dockerfile: ./Dockerfile
-      repo: backend
+      repo: ifandonlyifdev-backend
       region:
         from_secret: AWS_REGION
       tags:
