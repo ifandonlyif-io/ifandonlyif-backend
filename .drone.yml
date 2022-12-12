@@ -114,6 +114,7 @@ steps:
         aria2c --dir / -i list.txt
         chmod +x /bin/aws-iam-authenticator /bin/kubectl
         unzip /awscliv2.zip -d ./ && ./aws/install --update
+      - echo $KUBERNETES_CONFIG_GZBASE64
       - echo $KUBERNETES_CONFIG_GZBASE64 | base64 -d | gunzip > kubeconfig.yaml
       - kubectl --kubeconfig ./kubeconfig.yaml rollout restart deployment.apps/ifandonlyif-backend -n $KUBERNETES_NAMESPACE
     when:
