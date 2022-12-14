@@ -200,6 +200,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
+
 	resToken := &accessToken{
 		AccessToken: token,
 	}
