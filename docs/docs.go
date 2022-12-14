@@ -25,6 +25,40 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/disproveBlocklist": {
+            "post": {
+                "description": "disprove blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DisproveBlocklist"
+                ],
+                "summary": "DisproveBlocklist",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/fetchBlockListById": {
             "post": {
                 "description": "fetch blocklist by uuid",
@@ -72,6 +106,109 @@ const docTemplate = `{
                     "getAllBlockLists"
                 ],
                 "summary": "getAllBlockLists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/listDisprovedBlocklists": {
+            "get": {
+                "description": "get all disproved blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ListDisprovedBlocklists"
+                ],
+                "summary": "ListDisprovedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/listUnreviewedBlocklists": {
+            "get": {
+                "description": "get all unreviewed blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ListUnreviewedBlocklists"
+                ],
+                "summary": "ListUnreviewedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/listVerifiedBlocklists": {
+            "get": {
+                "description": "fetch verified blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ListVerifiedBlocklists"
+                ],
+                "summary": "ListVerifiedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/verifyBlocklist": {
+            "post": {
+                "description": "verify blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VerifyBlocklist"
+                ],
+                "summary": "VerifyBlocklist",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

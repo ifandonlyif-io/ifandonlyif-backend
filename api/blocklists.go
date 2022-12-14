@@ -13,6 +13,14 @@ type GetListPayload struct {
 	UUID string `json:"uuid"`
 }
 
+type VerifyPayload struct {
+	UUID string `json:"uuid"`
+}
+
+type DisprovePayload struct {
+	UUID string `json:"uuid"`
+}
+
 type CheckUriPayload struct {
 	Uri string `json:"uri"`
 }
@@ -55,7 +63,7 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 	if errUuid != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errUuid)
 	}
-
+	fmt.Println(queryUuid)
 	blocklist, errGetList := server.store.GetReportBlocklist(c.Request().Context(), queryUuid)
 
 	if errGetList != nil {
@@ -82,9 +90,8 @@ func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
 	}
 
-	test, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
+	_, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
 
-	fmt.Print(test)
 	if errGetList != nil {
 
 		if errGetList == sql.ErrNoRows {
@@ -95,4 +102,123 @@ func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, true)
+}
+
+// blocklists godoc
+// @Summary      ListVerifiedBlocklists
+// @Description  fetch verified blocklists
+// @Tags         ListVerifiedBlocklists
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /api/listVerifiedBlocklists [GET]
+func (server *Server) ListVerifiedBlocklists(c echo.Context) (err error) {
+
+	blocklists, errGetList := server.store.ListVerifiedBlocklists(c.Request().Context())
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklists)
+}
+
+// blocklists godoc
+// @Summary      ListDisprovedBlocklists
+// @Description  get all disproved blocklists
+// @Tags         ListDisprovedBlocklists
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /api/listDisprovedBlocklists [GET]
+func (server *Server) ListDisprovedBlocklists(c echo.Context) (err error) {
+
+	blocklists, errGetList := server.store.ListDisprovedBlocklists(c.Request().Context())
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklists)
+}
+
+// blocklists godoc
+// @Summary      VerifyBlocklist
+// @Description  verify blocklist by uuid
+// @Tags         VerifyBlocklist
+// @param uuid body string true "uuid"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /api/verifyBlocklist [POST]
+func (server *Server) VerifyBlocklist(c echo.Context) (err error) {
+
+	var v VerifyPayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &v); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+
+	queryUuid, errUuid := uuid.Parse(v.UUID)
+	if errUuid != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errUuid)
+	}
+
+	blocklist, errGetList := server.store.VerifyBlocklist(c.Request().Context(), queryUuid)
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklist)
+}
+
+// blocklists godoc
+// @Summary      DisproveBlocklist
+// @Description  disprove blocklist by uuid
+// @Tags         DisproveBlocklist
+// @param uuid body string true "uuid"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /api/disproveBlocklist [POST]
+func (server *Server) DisproveBlocklist(c echo.Context) (err error) {
+
+	var d DisprovePayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &d); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+
+	queryUuid, errUuid := uuid.Parse(d.UUID)
+	if errUuid != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errUuid)
+	}
+
+	blocklist, errGetList := server.store.DisproveBlocklist(c.Request().Context(), queryUuid)
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklist)
+}
+
+// blocklists godoc
+// @Summary      ListUnreviewedBlocklists
+// @Description  get all unreviewed blocklists
+// @Tags         ListUnreviewedBlocklists
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /api/listUnreviewedBlocklists [GET]
+func (server *Server) ListUnreviewedBlocklists(c echo.Context) (err error) {
+
+	blocklists, errGetList := server.store.ListUnreviewedBlocklists(c.Request().Context())
+
+	if errGetList != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+	}
+
+	return c.JSON(http.StatusOK, blocklists)
 }

@@ -80,7 +80,13 @@ func (server *Server) setupRouter() {
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
+	api.GET("/listDisprovedBlocklists", server.ListDisprovedBlocklists)
+	api.GET("/listVerifiedBlocklists", server.ListVerifiedBlocklists)
+	api.GET("/listUnreviewedBlocklists", server.ListUnreviewedBlocklists)
 	api.POST("/fetchBlockListById", server.GetBlockListById)
+	api.POST("/disproveBlocklist", server.DisproveBlocklist)
+	api.POST("/verifyBlocklist", server.VerifyBlocklist)
+
 	server.Echo = e
 }
 
