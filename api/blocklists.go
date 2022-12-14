@@ -74,37 +74,6 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 }
 
 // blocklists godoc
-// @Summary      checkUri
-// @Description  fetch blocklist by uri
-// @Tags         checkUri
-// @param uri body string true "uri"
-// @Accept */*
-// @produce application/json
-// @Success      200  {string}  StatusOK
-// @Router       /checkUri [POST]
-func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
-
-	var u CheckUriPayload
-
-	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &u); errPayload != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
-	}
-
-	_, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
-
-	if errGetList != nil {
-
-		if errGetList == sql.ErrNoRows {
-			return c.JSON(http.StatusOK, false)
-		} else {
-			return echo.NewHTTPError(http.StatusBadRequest, errGetList)
-		}
-	}
-
-	return c.JSON(http.StatusOK, true)
-}
-
-// blocklists godoc
 // @Summary      ListVerifiedBlocklists
 // @Description  fetch verified blocklists
 // @Tags         ListVerifiedBlocklists
@@ -221,4 +190,35 @@ func (server *Server) ListUnreviewedBlocklists(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, blocklists)
+}
+
+// blocklists godoc
+// @Summary      checkUri
+// @Description  fetch blocklist by uri
+// @Tags         checkUri
+// @param uri body string true "uri"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /checkUri [POST]
+func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
+
+	var u CheckUriPayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &u); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+
+	_, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
+
+	if errGetList != nil {
+
+		if errGetList == sql.ErrNoRows {
+			return c.JSON(http.StatusOK, false)
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+		}
+	}
+
+	return c.JSON(http.StatusOK, true)
 }
