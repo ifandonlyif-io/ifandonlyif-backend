@@ -195,7 +195,7 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.Wallet, server.config.RefreshTokenDuration)
+	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.Wallet, server.config.AccessTokenDuration)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
