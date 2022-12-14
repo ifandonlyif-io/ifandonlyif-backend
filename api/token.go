@@ -1,10 +1,7 @@
 package api
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -42,34 +39,34 @@ func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 	// session management
-	session, err := server.store.GetSession(ctx.Request().Context(), refreshPayload.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return echo.NewHTTPError(http.StatusNotFound, err)
-		}
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
+	// session, err := server.store.GetSession(ctx.Request().Context(), refreshPayload.ID)
+	// if err != nil {
+	// 	if err == sql.ErrNoRows {
+	// 		return echo.NewHTTPError(http.StatusNotFound, err)
+	// 	}
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
-	if session.IsBlocked {
-		err := fmt.Errorf("blocked session")
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
+	// if session.IsBlocked {
+	// 	err := fmt.Errorf("blocked session")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	if session.Wallet != refreshPayload.Wallet {
-		err := fmt.Errorf("incorrect session wallet")
+	// if session.Wallet != refreshPayload.Wallet {
+	// 	err := fmt.Errorf("incorrect session wallet")
 
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	if session.RefreshToken != req.RefreshToken {
-		err := fmt.Errorf("mismatched session token")
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
+	// if session.RefreshToken != req.RefreshToken {
+	// 	err := fmt.Errorf("mismatched session token")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	if time.Now().After(session.ExpiresAt) {
-		err := fmt.Errorf("expired session")
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
+	// if time.Now().After(session.ExpiresAt) {
+	// 	err := fmt.Errorf("expired session")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
 	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		refreshPayload.UserName,
