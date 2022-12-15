@@ -11,7 +11,7 @@ FROM alpine:3.16
 WORKDIR /app
 COPY --from=builder /app/main .
 COPY db/migration ./db/migration
-RUN ["touch", "app.env"]
+COPY app.example.env ./app.env
 COPY start.sh .
 COPY wait-for.sh .
 RUN ["chmod", "+x", "/app/wait-for.sh"]
