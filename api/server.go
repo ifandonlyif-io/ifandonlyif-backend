@@ -65,7 +65,7 @@ func (server *Server) setupRouter() {
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
 	e.POST("/renewAccess", server.renewAccessToken)
-	e.GET("/health", HealthCheck)
+	e.GET("/healthz", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
 	e.GET("/nft", server.getNFTs) // unused
