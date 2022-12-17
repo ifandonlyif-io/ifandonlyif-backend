@@ -65,7 +65,7 @@ func (server *Server) setupRouter() {
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
 	e.POST("/renewAccess", server.renewAccessToken)
-	e.GET("/health", HealthCheck)
+	e.GET("/healthz", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
 	e.GET("/nft", server.getNFTs) // unused
@@ -80,7 +80,13 @@ func (server *Server) setupRouter() {
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
+	api.GET("/listDisprovedBlocklists", server.ListDisprovedBlocklists)
+	api.GET("/listVerifiedBlocklists", server.ListVerifiedBlocklists)
+	api.GET("/listUnreviewedBlocklists", server.ListUnreviewedBlocklists)
 	api.POST("/fetchBlockListById", server.GetBlockListById)
+	api.POST("/disproveBlocklist", server.DisproveBlocklist)
+	api.POST("/verifyBlocklist", server.VerifyBlocklist)
+
 	server.Echo = e
 }
 

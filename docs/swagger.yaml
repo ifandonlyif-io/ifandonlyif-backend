@@ -21,6 +21,28 @@ info:
   title: Ifandonlyif API
   version: "1.0"
 paths:
+  /api/disproveBlocklist:
+    post:
+      consumes:
+      - '*/*'
+      description: disprove blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: DisproveBlocklist
+      tags:
+      - DisproveBlocklist
   /api/fetchBlockListById:
     post:
       consumes:
@@ -58,6 +80,73 @@ paths:
       summary: getAllBlockLists
       tags:
       - getAllBlockLists
+  /api/listDisprovedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: get all disproved blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListDisprovedBlocklists
+      tags:
+      - ListDisprovedBlocklists
+  /api/listUnreviewedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: get all unreviewed blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListUnreviewedBlocklists
+      tags:
+      - ListUnreviewedBlocklists
+  /api/listVerifiedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch verified blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListVerifiedBlocklists
+      tags:
+      - ListVerifiedBlocklists
+  /api/verifyBlocklist:
+    post:
+      consumes:
+      - '*/*'
+      description: verify blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: VerifyBlocklist
+      tags:
+      - VerifyBlocklist
   /auth/fetchUserNfts:
     post:
       consumes:
