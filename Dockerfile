@@ -1,6 +1,7 @@
 # Build stage
 FROM golang:1.18-alpine3.16 AS builder
 ENV CGO_ENABLED 0
+ENV GOARCH="arm64"
 WORKDIR /app
 COPY . .
 

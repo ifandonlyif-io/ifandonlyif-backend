@@ -42,12 +42,16 @@ platform:
   os: linux
   arch: arm64
 
+metadata:
+  labels:
+    fargate: "true"
+
 workspace:
   path: /app
 
 steps:
   - name: push to ecr dev
-    image: plugins/ecr
+    image: plugins/kaniko-ecr
     settings:
       mtu: 1400
       registry:
