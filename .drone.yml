@@ -46,7 +46,7 @@ metadata:
   labels:
     fargate: "k8s"
   annotations:
-    CapacityProvisioned: 0.25vCPU 0.5GB
+    CapacityProvisioned: 1vCPU 2GB
 
 workspace:
   path: /app
