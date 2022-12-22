@@ -44,7 +44,7 @@ platform:
 
 metadata:
   labels:
-    fargate: "k8s"
+    fargate: k8
   annotations:
     CapacityProvisioned: 1vCPU 2GB
 
