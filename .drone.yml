@@ -44,7 +44,9 @@ platform:
 
 metadata:
   labels:
-    fargate: "true"
+    fargate: "k8s"
+  annotations:
+    CapacityProvisioned: 0.25vCPU 0.5GB
 
 workspace:
   path: /app
