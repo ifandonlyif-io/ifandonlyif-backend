@@ -51,7 +51,11 @@ func (server *Server) FetchUserNfts(c echo.Context) (err error) {
 
 	// set woner wallet address
 	params.Set("owner", payload.Wallet)
-	reqUrl := "https://eth-mainnet.g.alchemy.com/v2/uLe6RNK4s3INiolh-9N2t9hE2xpO2YGl/getNFTs?" + params.Encode()
+	//main net
+	//reqUrl := "https://eth-mainnet.g.alchemy.com/v2/uLe6RNK4s3INiolh-9N2t9hE2xpO2YGl/getNFTs?" + params.Encode()
+
+	// goerli net
+	reqUrl := "https://eth-goerli.g.alchemy.com/v2/JJqZwPLyThiBz_TowjruMBZWKiL9UIae/getNFTs?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().
