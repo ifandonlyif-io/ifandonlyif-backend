@@ -18,7 +18,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:1323",
     "basePath": "/",
     "paths": {
         "/api/disproveBlocklist": {

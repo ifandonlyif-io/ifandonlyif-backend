@@ -7,7 +7,6 @@ definitions:
       accessTokenExpiresAt:
         type: integer
     type: object
-host: localhost:1323
 info:
   contact:
     email: support@swagger.io
