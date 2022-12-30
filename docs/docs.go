@@ -573,7 +573,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/",
-	Schemes:          []string{"http"},
+	Schemes:          []string{},
 	Title:            "Ifandonlyif API",
 	Description:      "This is a sample server server.",
 	InfoInstanceName: "swagger",

@@ -1,7 +1,4 @@
 {
-    "schemes": [
-        "http"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "This is a sample server server.",
