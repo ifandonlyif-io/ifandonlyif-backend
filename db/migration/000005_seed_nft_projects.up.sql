@@ -37,5 +37,7 @@ VALUES ('BAKC','0xba30E5F9Bb24caa003E9f2f0497Ad287FDF95623','Bored Ape Kennel Cl
 INSERT INTO nft_projects(name,contract_address, collection_name,image_uri)
 VALUES ('10KTF','0x0Cfb5d82BE2b949e8fa73A656dF91821E2aD99FD','10KTF','https://ik.imagekit.io/sfwl48klh/10ktf_3DjhlS92u.webp');
 
+INSERT INTO nft_projects(name,contract_address, collection_name,image_uri)
+VALUES ('BOREDAPE','0xf72e381b649b95eb956f65cf0c36797c0e45c4ca','BOREDAPE','https://ik.imagekit.io/sfwl48klh/bayc_hDUqdjW4u.webp');
 
 
