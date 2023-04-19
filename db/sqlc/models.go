@@ -11,6 +11,22 @@ import (
 	"github.com/google/uuid"
 )
 
+type AppliancesFromDiscordChannel struct {
+	ID          uuid.UUID    `json:"id"`
+	ChannelName string       `json:"channelName"`
+	GuildID     string       `json:"guildID"`
+	CreatedAt   time.Time    `json:"createdAt"`
+	VerifiedAt  sql.NullTime `json:"verifiedAt"`
+	IsApproved  sql.NullBool `json:"isApproved"`
+}
+
+type DiscordChannel struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	GuildID   string    `json:"guildID"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
 type GasPrice struct {
 	ID        int64         `json:"id"`
 	Average   sql.NullInt32 `json:"average"`
@@ -42,6 +58,10 @@ type ReportBlocklist struct {
 	UserWalletAddress sql.NullString `json:"userWalletAddress"`
 	CreatedAt         time.Time      `json:"createdAt"`
 	DisprovedAt       sql.NullTime   `json:"disprovedAt"`
+	GuildID           string         `json:"guildID"`
+	GuildName         string         `json:"guildName"`
+	ReporterName      string         `json:"reporterName"`
+	ReporterAvatar    string         `json:"reporterAvatar"`
 }
 
 type ReportWhitelist struct {

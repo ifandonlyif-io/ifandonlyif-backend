@@ -53,3 +53,8 @@ func (server *Server) GetBlockListById(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, blocklist)
 }
+
+//func (server *Server) verify(e echo.Context) error {
+//   id := e.Param("id")
+//
+//}
