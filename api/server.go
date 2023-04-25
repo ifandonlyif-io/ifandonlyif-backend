@@ -15,23 +15,33 @@ import (
 
 // Server serves HTTP requests for our nft-platform service.
 type Server struct {
-	config     util.Config
-	store      db.Store
-	Echo       *echo.Echo
-	tokenMaker token.Maker
+	config            util.Config
+	store             db.Store
+	Echo              *echo.Echo
+	accessTokenMaker  token.Maker
+	refreshTokenMaker token.Maker
 }
 
 // NewServer creates a new HTTP server and set up routing.
 func NewServer(config util.Config, store db.Store) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	fmt.Println(config.AccessTokenDuration)
+	fmt.Println(config.AccessTokenSymmetricKey)
+	fmt.Println(config.DBDriver)
+	accessTokenMaker, accessErr := token.NewJWTMaker(config.AccessTokenSymmetricKey)
+	if accessErr != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", accessErr)
+	}
+
+	refreshTokenMaker, refreshErr := token.NewJWTMaker(config.RefreshTokenSymmetricKey)
+	if refreshErr != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", refreshErr)
 	}
 
 	server := &Server{
-		config:     config,
-		store:      store,
-		tokenMaker: tokenMaker,
+		config:            config,
+		store:             store,
+		accessTokenMaker:  accessTokenMaker,
+		refreshTokenMaker: refreshTokenMaker,
 	}
 	server.setupRouter()
 	server.RunCronFetchGas()

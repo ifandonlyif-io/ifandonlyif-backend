@@ -94,7 +94,7 @@ func TestAuthMiddleware(t *testing.T) {
 			c := server.Echo.NewContext(request, recorder)
 			c.SetPath("/auth")
 
-			tc.setupAuth(t, request, server.tokenMaker)
+			tc.setupAuth(t, request, server.accessTokenMaker)
 			server.Echo.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 

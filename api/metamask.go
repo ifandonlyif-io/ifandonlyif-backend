@@ -28,8 +28,9 @@ type code struct {
 	Code string `json:"code"`
 }
 
-type accessToken struct {
-	AccessToken string `json:"accessToken"`
+type returnToken struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 type RegisterPayload struct {
@@ -195,14 +196,19 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	token, _, err := server.tokenMaker.CreateToken(user.FullName, user.Wallet, server.config.AccessTokenDuration)
-
-	if err != nil {
+	accesstoken, _, accessErr := server.accessTokenMaker.CreateToken(user.FullName, user.Wallet, server.config.AccessTokenDuration)
+	if accessErr != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	resToken := &accessToken{
-		AccessToken: token,
+	refreshtoken, _, refreshErr := server.refreshTokenMaker.CreateToken(user.FullName, user.Wallet, server.config.RefreshTokenDuration)
+	if refreshErr != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	resToken := &returnToken{
+		AccessToken:  accesstoken,
+		RefreshToken: refreshtoken,
 	}
 
 	return c.JSON(http.StatusCreated, resToken)

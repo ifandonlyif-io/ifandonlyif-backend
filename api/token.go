@@ -34,7 +34,7 @@ func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
+	refreshPayload, err := server.refreshTokenMaker.VerifyToken(req.RefreshToken)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
@@ -68,7 +68,7 @@ func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
 	// }
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := server.accessTokenMaker.CreateToken(
 		refreshPayload.UserName,
 		refreshPayload.Wallet,
 		server.config.RefreshTokenDuration,
