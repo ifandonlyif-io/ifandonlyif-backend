@@ -64,6 +64,46 @@ func (q *Queries) DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 	return err
 }
 
+const disproveBlocklist = `-- name: DisproveBlocklist :one
+UPDATE report_blocklists
+SET disproved_at = NOW()
+WHERE id = $1
+RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
+`
+
+func (q *Queries) DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error) {
+	row := q.db.QueryRowContext(ctx, disproveBlocklist, id)
+	var i ReportBlocklist
+	err := row.Scan(
+		&i.ID,
+		&i.HttpAddress,
+		&i.VerifiedAt,
+		&i.UserWalletAddress,
+		&i.CreatedAt,
+		&i.DisprovedAt,
+	)
+	return i, err
+}
+
+const getBlocklistByUri = `-- name: GetBlocklistByUri :one
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists 
+WHERE http_address = $1
+`
+
+func (q *Queries) GetBlocklistByUri(ctx context.Context, httpAddress string) (ReportBlocklist, error) {
+	row := q.db.QueryRowContext(ctx, getBlocklistByUri, httpAddress)
+	var i ReportBlocklist
+	err := row.Scan(
+		&i.ID,
+		&i.HttpAddress,
+		&i.VerifiedAt,
+		&i.UserWalletAddress,
+		&i.CreatedAt,
+		&i.DisprovedAt,
+	)
+	return i, err
+}
+
 const getReportBlocklist = `-- name: GetReportBlocklist :one
 SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE id = $1 LIMIT 1
@@ -150,6 +190,41 @@ func (q *Queries) GetReportBlocklistUpdate(ctx context.Context, id uuid.UUID) (R
 	return i, err
 }
 
+const listDisprovedBlocklists = `-- name: ListDisprovedBlocklists :many
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+WHERE disproved_at is NOT NULL
+`
+
+func (q *Queries) ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklist, error) {
+	rows, err := q.db.QueryContext(ctx, listDisprovedBlocklists)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ReportBlocklist{}
+	for rows.Next() {
+		var i ReportBlocklist
+		if err := rows.Scan(
+			&i.ID,
+			&i.HttpAddress,
+			&i.VerifiedAt,
+			&i.UserWalletAddress,
+			&i.CreatedAt,
+			&i.DisprovedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listReportBlocklists = `-- name: ListReportBlocklists :many
 SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 `
@@ -188,20 +263,86 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 	return items, nil
 }
 
-const updateReportBlocklistVerified = `-- name: UpdateReportBlocklistVerified :one
+const listUnreviewedBlocklists = `-- name: ListUnreviewedBlocklists :many
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+WHERE disproved_at is NULL
+AND verified_at is NULL
+`
+
+func (q *Queries) ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlocklist, error) {
+	rows, err := q.db.QueryContext(ctx, listUnreviewedBlocklists)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ReportBlocklist{}
+	for rows.Next() {
+		var i ReportBlocklist
+		if err := rows.Scan(
+			&i.ID,
+			&i.HttpAddress,
+			&i.VerifiedAt,
+			&i.UserWalletAddress,
+			&i.CreatedAt,
+			&i.DisprovedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listVerifiedBlocklists = `-- name: ListVerifiedBlocklists :many
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+WHERE verified_at is NOT NULL
+`
+
+func (q *Queries) ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist, error) {
+	rows, err := q.db.QueryContext(ctx, listVerifiedBlocklists)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ReportBlocklist{}
+	for rows.Next() {
+		var i ReportBlocklist
+		if err := rows.Scan(
+			&i.ID,
+			&i.HttpAddress,
+			&i.VerifiedAt,
+			&i.UserWalletAddress,
+			&i.CreatedAt,
+			&i.DisprovedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const verifyBlocklist = `-- name: VerifyBlocklist :one
 UPDATE report_blocklists
-SET verified_at = $2
+SET verified_at = NOW()
 WHERE id = $1
 RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar
 `
 
-type UpdateReportBlocklistVerifiedParams struct {
-	ID         uuid.UUID    `json:"id"`
-	VerifiedAt sql.NullTime `json:"verifiedAt"`
-}
-
-func (q *Queries) UpdateReportBlocklistVerified(ctx context.Context, arg UpdateReportBlocklistVerifiedParams) (ReportBlocklist, error) {
-	row := q.db.QueryRowContext(ctx, updateReportBlocklistVerified, arg.ID, arg.VerifiedAt)
+func (q *Queries) VerifyBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error) {
+	row := q.db.QueryRowContext(ctx, verifyBlocklist, id)
 	var i ReportBlocklist
 	err := row.Scan(
 		&i.ID,

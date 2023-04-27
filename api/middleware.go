@@ -42,7 +42,7 @@ func (server *Server) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		accessToken := fields[1]
-		payload, err := server.tokenMaker.VerifyToken(accessToken)
+		payload, err := server.accessTokenMaker.VerifyToken(accessToken)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}

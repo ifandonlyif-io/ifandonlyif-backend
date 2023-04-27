@@ -15,11 +15,11 @@ var (
 
 // Payload contains the payload data of the token
 type Payload struct {
-	ID            uuid.UUID `json:"id"`
-	UserName      string    `json:"username"`
-	WalletAddress string    `json:"wallet"`
-	IssuedAt      int64     `json:"iat"`
-	ExpiredAt     int64     `json:"exp"`
+	ID        uuid.UUID `json:"id"`
+	UserName  string    `json:"username"`
+	Wallet    string    `json:"wallet"`
+	IssuedAt  int64     `json:"iat"`
+	ExpiredAt int64     `json:"exp"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
@@ -30,11 +30,11 @@ func NewPayload(username string, wallet string, duration time.Duration) (*Payloa
 	}
 
 	payload := &Payload{
-		ID:            tokenID,
-		UserName:      username,
-		WalletAddress: wallet,
-		IssuedAt:      time.Now().Unix(),
-		ExpiredAt:     time.Now().Add(duration).Unix(),
+		ID:        tokenID,
+		UserName:  username,
+		Wallet:    wallet,
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(duration).Unix(),
 	}
 
 	return payload, nil

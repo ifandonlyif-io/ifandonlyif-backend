@@ -25,6 +25,74 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/disproveBlocklist": {
+            "post": {
+                "description": "disprove blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DisproveBlocklist"
+                ],
+                "summary": "DisproveBlocklist",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/fetchBlockListById": {
+            "post": {
+                "description": "fetch blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fetchBlockListById"
+                ],
+                "summary": "fetchBlockListById",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/getAllBlockLists": {
             "get": {
                 "description": "get all blocklists",
@@ -48,9 +116,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/getBlockListById": {
-            "post": {
-                "description": "get blocklist by uuid",
+        "/api/listDisprovedBlocklists": {
+            "get": {
+                "description": "get all disproved blocklists",
                 "consumes": [
                     "*/*"
                 ],
@@ -58,9 +126,78 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "getBlockListById"
+                    "ListDisprovedBlocklists"
                 ],
-                "summary": "getBlockListById",
+                "summary": "ListDisprovedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/listUnreviewedBlocklists": {
+            "get": {
+                "description": "get all unreviewed blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ListUnreviewedBlocklists"
+                ],
+                "summary": "ListUnreviewedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/listVerifiedBlocklists": {
+            "get": {
+                "description": "fetch verified blocklists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ListVerifiedBlocklists"
+                ],
+                "summary": "ListVerifiedBlocklists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/verifyBlocklist": {
+            "post": {
+                "description": "verify blocklist by uuid",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VerifyBlocklist"
+                ],
+                "summary": "VerifyBlocklist",
                 "parameters": [
                     {
                         "description": "uuid",
@@ -95,6 +232,40 @@ const docTemplate = `{
                     "fetchUserNfts"
                 ],
                 "summary": "fetchUserNfts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/checkUri": {
+            "post": {
+                "description": "fetch blocklist by uri",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "checkUri"
+                ],
+                "summary": "checkUri",
+                "parameters": [
+                    {
+                        "description": "uri",
+                        "name": "uri",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -156,6 +327,29 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/ethToUsd": {
+            "get": {
+                "description": "get current 1 ETH to USD price",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ethToUsd"
+                ],
+                "summary": "ethToUsd",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
@@ -276,6 +470,100 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/nftProjects": {
+            "get": {
+                "description": "fetch limited nft projects",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "nftProjects"
+                ],
+                "summary": "nftProjects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/renewAccess": {
+            "post": {
+                "description": "renewAccess",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "renewAccess"
+                ],
+                "summary": "renewAccess",
+                "parameters": [
+                    {
+                        "description": "refreshToken",
+                        "name": "refreshToken",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.renewAccessTokenResponse"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.renewAccessTokenResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenExpiresAt": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }`
@@ -283,9 +571,9 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:1323",
+	Host:             "",
 	BasePath:         "/",
-	Schemes:          []string{"http"},
+	Schemes:          []string{},
 	Title:            "Ifandonlyif API",
 	Description:      "This is a sample server server.",
 	InfoInstanceName: "swagger",

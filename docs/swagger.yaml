@@ -1,5 +1,12 @@
 basePath: /
-host: localhost:1323
+definitions:
+  api.renewAccessTokenResponse:
+    properties:
+      accessToken:
+        type: string
+      accessTokenExpiresAt:
+        type: integer
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -13,6 +20,50 @@ info:
   title: Ifandonlyif API
   version: "1.0"
 paths:
+  /api/disproveBlocklist:
+    post:
+      consumes:
+      - '*/*'
+      description: disprove blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: DisproveBlocklist
+      tags:
+      - DisproveBlocklist
+  /api/fetchBlockListById:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uuid
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: fetchBlockListById
+      tags:
+      - fetchBlockListById
   /api/getAllBlockLists:
     get:
       consumes:
@@ -28,11 +79,56 @@ paths:
       summary: getAllBlockLists
       tags:
       - getAllBlockLists
-  /api/getBlockListById:
+  /api/listDisprovedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: get all disproved blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListDisprovedBlocklists
+      tags:
+      - ListDisprovedBlocklists
+  /api/listUnreviewedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: get all unreviewed blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListUnreviewedBlocklists
+      tags:
+      - ListUnreviewedBlocklists
+  /api/listVerifiedBlocklists:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch verified blocklists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ListVerifiedBlocklists
+      tags:
+      - ListVerifiedBlocklists
+  /api/verifyBlocklist:
     post:
       consumes:
       - '*/*'
-      description: get blocklist by uuid
+      description: verify blocklist by uuid
       parameters:
       - description: uuid
         in: body
@@ -47,9 +143,9 @@ paths:
           description: OK
           schema:
             type: string
-      summary: getBlockListById
+      summary: VerifyBlocklist
       tags:
-      - getBlockListById
+      - VerifyBlocklist
   /auth/fetchUserNfts:
     post:
       consumes:
@@ -65,6 +161,28 @@ paths:
       summary: fetchUserNfts
       tags:
       - fetchUserNfts
+  /checkUri:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uri
+      parameters:
+      - description: uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: checkUri
+      tags:
+      - checkUri
   /code:
     post:
       consumes:
@@ -103,6 +221,21 @@ paths:
       summary: code
       tags:
       - code
+  /ethToUsd:
+    get:
+      consumes:
+      - '*/*'
+      description: get current 1 ETH to USD price
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ethToUsd
+      tags:
+      - ethToUsd
   /gasInfo:
     get:
       consumes:
@@ -178,6 +311,57 @@ paths:
       summary: login
       tags:
       - login
-schemes:
-- http
+  /nftProjects:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch limited nft projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: nftProjects
+      tags:
+      - nftProjects
+  /renewAccess:
+    post:
+      consumes:
+      - application/json
+      description: renewAccess
+      parameters:
+      - description: refreshToken
+        in: body
+        name: refreshToken
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.renewAccessTokenResponse'
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: renewAccess
+      tags:
+      - renewAccess
 swagger: "2.0"

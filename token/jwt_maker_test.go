@@ -29,7 +29,7 @@ func TestJWTMaker(t *testing.T) {
 
 	require.NotZero(t, payload.ID)
 	require.Equal(t, username, payload.UserName)
-	require.Equal(t, wallet, payload.WalletAddress)
+	require.Equal(t, wallet, payload.Wallet)
 	require.WithinDuration(t, time.Unix(issuedAt, 0), time.Unix(payload.IssuedAt, 0), time.Second)
 	require.WithinDuration(t, time.Unix(expiredAt, 0), time.Unix(payload.ExpiredAt, 0), time.Second)
 }

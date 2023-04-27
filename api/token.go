@@ -1,78 +1,80 @@
 package api
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
 type renewAccessTokenRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
+	RefreshToken string `json:"refreshToken" binding:"required"`
 }
 
 type renewAccessTokenResponse struct {
-	AccessToken          string `json:"access_token"`
-	AccessTokenExpiresAt int64  `json:"access_token_expires_at"`
+	AccessToken          string `json:"accessToken"`
+	AccessTokenExpiresAt int64  `json:"accessTokenExpiresAt"`
 }
 
+// token godoc
+// @Summary      renewAccess
+// @Description  renewAccess
+// @Tags         renewAccess
+// @Accept       json
+// @produce application/json
+// @param refreshToken body string true "refreshToken"
+// @Success      200  {object}  renewAccessTokenResponse
+// @Success      201  {string}  StatusOK
+// @Failure      400  {string}  StatusBadRequest
+// @Failure      404  {string}  StatusNotFound
+// @Failure      500  {string}  StatusInternalServerError
+// @Router       /renewAccess [POST]
 func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 	var req renewAccessTokenRequest
 	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
+	refreshPayload, err := server.refreshTokenMaker.VerifyToken(req.RefreshToken)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, err)
-		return
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 	// session management
-	session, err := server.store.GetSession(ctx.Request().Context(), refreshPayload.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, err)
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
+	// session, err := server.store.GetSession(ctx.Request().Context(), refreshPayload.ID)
+	// if err != nil {
+	// 	if err == sql.ErrNoRows {
+	// 		return echo.NewHTTPError(http.StatusNotFound, err)
+	// 	}
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
-	if session.IsBlocked {
-		err := fmt.Errorf("blocked session")
-		ctx.JSON(http.StatusUnauthorized, err)
-		return
-	}
+	// if session.IsBlocked {
+	// 	err := fmt.Errorf("blocked session")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	if session.WalletAddress != refreshPayload.WalletAddress {
-		err := fmt.Errorf("incorrect session wallet")
-		ctx.JSON(http.StatusUnauthorized, err)
-		return
-	}
+	// if session.Wallet != refreshPayload.Wallet {
+	// 	err := fmt.Errorf("incorrect session wallet")
 
-	if session.RefreshToken != req.RefreshToken {
-		err := fmt.Errorf("mismatched session token")
-		ctx.JSON(http.StatusUnauthorized, err)
-		return
-	}
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	if time.Now().After(session.ExpiresAt) {
-		err := fmt.Errorf("expired session")
-		ctx.JSON(http.StatusUnauthorized, err)
-		return
-	}
+	// if session.RefreshToken != req.RefreshToken {
+	// 	err := fmt.Errorf("mismatched session token")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+	// if time.Now().After(session.ExpiresAt) {
+	// 	err := fmt.Errorf("expired session")
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
+
+	accessToken, accessPayload, err := server.accessTokenMaker.CreateToken(
 		refreshPayload.UserName,
-		refreshPayload.WalletAddress,
-		server.config.AccessTokenDuration,
+		refreshPayload.Wallet,
+		server.config.RefreshTokenDuration,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	rsp := renewAccessTokenResponse{

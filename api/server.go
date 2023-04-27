@@ -15,23 +15,33 @@ import (
 
 // Server serves HTTP requests for our nft-platform service.
 type Server struct {
-	config     util.Config
-	store      db.Store
-	Echo       *echo.Echo
-	tokenMaker token.Maker
+	config            util.Config
+	store             db.Store
+	Echo              *echo.Echo
+	accessTokenMaker  token.Maker
+	refreshTokenMaker token.Maker
 }
 
 // NewServer creates a new HTTP server and set up routing.
 func NewServer(config util.Config, store db.Store) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	fmt.Println(config.AccessTokenDuration)
+	fmt.Println(config.AccessTokenSymmetricKey)
+	fmt.Println(config.DBDriver)
+	accessTokenMaker, accessErr := token.NewJWTMaker(config.AccessTokenSymmetricKey)
+	if accessErr != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", accessErr)
+	}
+
+	refreshTokenMaker, refreshErr := token.NewJWTMaker(config.RefreshTokenSymmetricKey)
+	if refreshErr != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", refreshErr)
 	}
 
 	server := &Server{
-		config:     config,
-		store:      store,
-		tokenMaker: tokenMaker,
+		config:            config,
+		store:             store,
+		accessTokenMaker:  accessTokenMaker,
+		refreshTokenMaker: refreshTokenMaker,
 	}
 	server.setupRouter()
 	server.RunCronFetchGas()
@@ -44,7 +54,13 @@ func (server *Server) setupRouter() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORS()) // dev setting for allow any origin
+
+	// production setting
+	// e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	// 	AllowOrigins: []string{"http://localhost:3001", "http://219.84.184.170", "http://219.85.184.145"},
+	// 	AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	// }))
 
 	api := e.Group("/api", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup: "header:api-key",
@@ -58,22 +74,30 @@ func (server *Server) setupRouter() {
 	e.GET("/gasInfo", server.GasHandler)
 	e.POST("/code", server.NonceHandler)
 	e.POST("/login", server.LoginHandler)
-	e.POST("/tokens/renew_access", server.renewAccessToken)
-	e.GET("/health", HealthCheck)
+	e.POST("/renewAccess", server.renewAccessToken)
+	e.GET("/healthz", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/nft", server.getNFTs)    // unused
+	e.GET("/nft", server.getNFTs) // unused
+	e.GET("/nftProjects", server.ListNftProjects)
 	e.POST("/nft", server.createNFT) // unused
 	e.POST("discord/report", server.report)
 	e.GET("discord/nfts", server.getReportNFTs)
 	e.POST("discord/apply", server.apply)
 	//e.PATCH("report/:id/verify", server.verify)
+	e.POST("/checkUri", server.GetBlocklistByUri)
+	e.GET("/ethToUsd", server.EthToUsd)
 
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
-	api.POST("/getBlockListById", server.GetBlockListById)
+	api.GET("/listDisprovedBlocklists", server.ListDisprovedBlocklists)
+	api.GET("/listVerifiedBlocklists", server.ListVerifiedBlocklists)
+	api.GET("/listUnreviewedBlocklists", server.ListUnreviewedBlocklists)
+	api.POST("/fetchBlockListById", server.GetBlockListById)
+	api.POST("/disproveBlocklist", server.DisproveBlocklist)
+	api.POST("/verifyBlocklist", server.VerifyBlocklist)
 
 	server.Echo = e
 }

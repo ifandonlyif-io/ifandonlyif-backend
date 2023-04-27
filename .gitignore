@@ -4,6 +4,7 @@ gin-bin
 test.*
 .idea
 main
+ifandonlyif-backend
 test.env
 go-echo-boilerplate
 .DS_Store

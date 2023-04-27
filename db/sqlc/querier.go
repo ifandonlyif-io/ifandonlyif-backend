@@ -29,7 +29,9 @@ type Querier interface {
 	GetApplianceByGuildId(ctx context.Context, guildID string) (AppliancesFromDiscordChannel, error)
 	// :param id: string
 	GetApplianceChannelById(ctx context.Context, id uuid.UUID) (AppliancesFromDiscordChannel, error)
+	DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
 	GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error)
+	GetBlocklistByUri(ctx context.Context, httpAddress string) (ReportBlocklist, error)
 	GetChannelById(ctx context.Context, id uuid.UUID) (DiscordChannel, error)
 	GetChannelsByGuildId(ctx context.Context, guildID string) (DiscordChannel, error)
 	GetIffNftForUpdate(ctx context.Context, id uuid.UUID) (IffNft, error)
@@ -41,21 +43,26 @@ type Querier interface {
 	GetReportWhitelistUpdate(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
-	GetUserByWalletAddress(ctx context.Context, walletAddress sql.NullString) (GetUserByWalletAddressRow, error)
+	GetUserByWalletAddress(ctx context.Context, wallet sql.NullString) (GetUserByWalletAddressRow, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)
+	ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	ListIffNfts(ctx context.Context) ([]IffNft, error)
+	ListNftProjects(ctx context.Context) ([]NftProject, error)
 	ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	ListReportWhitelist(ctx context.Context) ([]ReportWhitelist, error)
+	ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	// :param id: string
 	// :param isApproved: bool
 	UpdateApplianceChannel(ctx context.Context, arg UpdateApplianceChannelParams) (AppliancesFromDiscordChannel, error)
 	UpdateReportBlocklistVerified(ctx context.Context, arg UpdateReportBlocklistVerifiedParams) (ReportBlocklist, error)
+	ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	UpdateReportWhitelisVerified(ctx context.Context, arg UpdateReportWhitelisVerifiedParams) (ReportWhitelist, error)
 	UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error)
 	UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDateParams) (User, error)
 	UpdateUserNonce(ctx context.Context, arg UpdateUserNonceParams) (User, error)
 	UpdateUserTwitterName(ctx context.Context, arg UpdateUserTwitterNameParams) (User, error)
+	VerifyBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
 }
 
 var _ Querier = (*Queries)(nil)

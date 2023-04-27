@@ -1,6 +1,6 @@
 CREATE TABLE "sessions" (
   "id" uuid PRIMARY KEY,
-  "wallet_address" varchar NOT NULL,
+  "wallet" varchar NOT NULL,
   "refresh_token" varchar NOT NULL,
   "user_agent" varchar NOT NULL,
   "client_ip" varchar NOT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE "sessions" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE "sessions" ADD FOREIGN KEY ("wallet_address") REFERENCES "users" ("wallet_address");
+ALTER TABLE "sessions" ADD FOREIGN KEY ("wallet") REFERENCES "users" ("wallet");

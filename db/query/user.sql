@@ -1,7 +1,7 @@
 -- name: CreateUser :one
 INSERT INTO users (
   full_name,
-  wallet_address,
+  wallet,
   country_code,
   email_address,
   twitter_name,
@@ -12,14 +12,14 @@ INSERT INTO users (
 ) RETURNING *;
 
 -- name: GetUser :one
-select ID, COALESCE(full_name),COALESCE(wallet_address),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
+select ID, COALESCE(full_name),COALESCE(wallet),COALESCE(created_at),COALESCE(country_code),COALESCE(email_address),COALESCE(kyc_date),COALESCE(twitter_name),COALESCE(blockpass_id),COALESCE(image_uri),COALESCE(nonce)
 FROM users
 WHERE id = $1 LIMIT 1;
 
 -- name: GetUserByWalletAddress :one
-select ID,COALESCE(full_name),COALESCE(wallet_address),COALESCE(nonce)
+select ID,COALESCE(full_name),COALESCE(wallet),COALESCE(nonce)
 FROM users
-WHERE wallet_address = $1 LIMIT 1;
+WHERE wallet = $1 LIMIT 1;
 
 -- name: GetUserForUpdate :one
 select *
@@ -52,7 +52,7 @@ RETURNING *;
 -- name: UpdateUserNonce :one
 UPDATE users
 SET nonce = $2
-WHERE wallet_address = $1
+WHERE wallet = $1
 RETURNING *;
 
 
