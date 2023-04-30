@@ -68,7 +68,7 @@ const disproveBlocklist = `-- name: DisproveBlocklist :one
 UPDATE report_blocklists
 SET disproved_at = NOW()
 WHERE id = $1
-RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
+RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar
 `
 
 func (q *Queries) DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error) {
@@ -81,12 +81,16 @@ func (q *Queries) DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBl
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
 
 const getBlocklistByUri = `-- name: GetBlocklistByUri :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists 
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists 
 WHERE http_address = $1
 `
 
@@ -100,6 +104,10 @@ func (q *Queries) GetBlocklistByUri(ctx context.Context, httpAddress string) (Re
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
@@ -191,7 +199,7 @@ func (q *Queries) GetReportBlocklistUpdate(ctx context.Context, id uuid.UUID) (R
 }
 
 const listDisprovedBlocklists = `-- name: ListDisprovedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE disproved_at is NOT NULL
 `
 
@@ -211,6 +219,10 @@ func (q *Queries) ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklis
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -264,7 +276,7 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 }
 
 const listUnreviewedBlocklists = `-- name: ListUnreviewedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE disproved_at is NULL
 AND verified_at is NULL
 `
@@ -285,6 +297,10 @@ func (q *Queries) ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlockli
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -300,7 +316,7 @@ func (q *Queries) ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlockli
 }
 
 const listVerifiedBlocklists = `-- name: ListVerifiedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE verified_at is NOT NULL
 `
 
@@ -320,6 +336,10 @@ func (q *Queries) ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}

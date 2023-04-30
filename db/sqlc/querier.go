@@ -24,12 +24,12 @@ type Querier interface {
 	DeleteReportBlocklist(ctx context.Context, id uuid.UUID) error
 	DeleteReportWhitelist(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
+	DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
 	GetAllAppliances(ctx context.Context) ([]AppliancesFromDiscordChannel, error)
 	GetAllChannels(ctx context.Context) ([]DiscordChannel, error)
 	GetApplianceByGuildId(ctx context.Context, guildID string) (AppliancesFromDiscordChannel, error)
 	// :param id: string
 	GetApplianceChannelById(ctx context.Context, id uuid.UUID) (AppliancesFromDiscordChannel, error)
-	DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error)
 	GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error)
 	GetBlocklistByUri(ctx context.Context, httpAddress string) (ReportBlocklist, error)
 	GetChannelById(ctx context.Context, id uuid.UUID) (DiscordChannel, error)
@@ -52,11 +52,10 @@ type Querier interface {
 	ListReportWhitelist(ctx context.Context) ([]ReportWhitelist, error)
 	ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	ListUsers(ctx context.Context) ([]User, error)
+	ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	// :param id: string
 	// :param isApproved: bool
 	UpdateApplianceChannel(ctx context.Context, arg UpdateApplianceChannelParams) (AppliancesFromDiscordChannel, error)
-	UpdateReportBlocklistVerified(ctx context.Context, arg UpdateReportBlocklistVerifiedParams) (ReportBlocklist, error)
-	ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	UpdateReportWhitelisVerified(ctx context.Context, arg UpdateReportWhitelisVerifiedParams) (ReportWhitelist, error)
 	UpdateUserEmailAddress(ctx context.Context, arg UpdateUserEmailAddressParams) (User, error)
 	UpdateUserKycDate(ctx context.Context, arg UpdateUserKycDateParams) (User, error)
