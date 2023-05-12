@@ -14,20 +14,30 @@ import (
 
 const createReportBlocklist = `-- name: CreateReportBlocklist :one
 INSERT INTO report_blocklists (
-  http_address,
-  user_wallet_address
+  http_address, user_wallet_address, guild_id, guild_name, reporter_name, reporter_avatar
 ) VALUES (
-  $1, $2
-) RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
+  $1, $2, $3, $4, $5, $6
+) RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar
 `
 
 type CreateReportBlocklistParams struct {
 	HttpAddress       string         `json:"httpAddress"`
 	UserWalletAddress sql.NullString `json:"userWalletAddress"`
+	GuildID           string         `json:"guildID"`
+	GuildName         string         `json:"guildName"`
+	ReporterName      string         `json:"reporterName"`
+	ReporterAvatar    string         `json:"reporterAvatar"`
 }
 
 func (q *Queries) CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error) {
-	row := q.db.QueryRowContext(ctx, createReportBlocklist, arg.HttpAddress, arg.UserWalletAddress)
+	row := q.db.QueryRowContext(ctx, createReportBlocklist,
+		arg.HttpAddress,
+		arg.UserWalletAddress,
+		arg.GuildID,
+		arg.GuildName,
+		arg.ReporterName,
+		arg.ReporterAvatar,
+	)
 	var i ReportBlocklist
 	err := row.Scan(
 		&i.ID,
@@ -36,6 +46,10 @@ func (q *Queries) CreateReportBlocklist(ctx context.Context, arg CreateReportBlo
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
@@ -54,7 +68,7 @@ const disproveBlocklist = `-- name: DisproveBlocklist :one
 UPDATE report_blocklists
 SET disproved_at = NOW()
 WHERE id = $1
-RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
+RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar
 `
 
 func (q *Queries) DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error) {
@@ -67,12 +81,16 @@ func (q *Queries) DisproveBlocklist(ctx context.Context, id uuid.UUID) (ReportBl
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
 
 const getBlocklistByUri = `-- name: GetBlocklistByUri :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists 
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists 
 WHERE http_address = $1
 `
 
@@ -86,12 +104,16 @@ func (q *Queries) GetBlocklistByUri(ctx context.Context, httpAddress string) (Re
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
 
 const getReportBlocklist = `-- name: GetReportBlocklist :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE id = $1 LIMIT 1
 `
 
@@ -105,12 +127,55 @@ func (q *Queries) GetReportBlocklist(ctx context.Context, id uuid.UUID) (ReportB
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
 
+const getReportBlocklistByUrl = `-- name: GetReportBlocklistByUrl :many
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
+WHERE http_address = $1
+`
+
+func (q *Queries) GetReportBlocklistByUrl(ctx context.Context, httpAddress string) ([]ReportBlocklist, error) {
+	rows, err := q.db.QueryContext(ctx, getReportBlocklistByUrl, httpAddress)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ReportBlocklist{}
+	for rows.Next() {
+		var i ReportBlocklist
+		if err := rows.Scan(
+			&i.ID,
+			&i.HttpAddress,
+			&i.VerifiedAt,
+			&i.UserWalletAddress,
+			&i.CreatedAt,
+			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getReportBlocklistUpdate = `-- name: GetReportBlocklistUpdate :one
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -125,12 +190,16 @@ func (q *Queries) GetReportBlocklistUpdate(ctx context.Context, id uuid.UUID) (R
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }
 
 const listDisprovedBlocklists = `-- name: ListDisprovedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE disproved_at is NOT NULL
 `
 
@@ -150,6 +219,10 @@ func (q *Queries) ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklis
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -165,7 +238,7 @@ func (q *Queries) ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklis
 }
 
 const listReportBlocklists = `-- name: ListReportBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 `
 
 func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, error) {
@@ -184,6 +257,10 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -199,7 +276,7 @@ func (q *Queries) ListReportBlocklists(ctx context.Context) ([]ReportBlocklist, 
 }
 
 const listUnreviewedBlocklists = `-- name: ListUnreviewedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE disproved_at is NULL
 AND verified_at is NULL
 `
@@ -220,6 +297,10 @@ func (q *Queries) ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlockli
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -235,7 +316,7 @@ func (q *Queries) ListUnreviewedBlocklists(ctx context.Context) ([]ReportBlockli
 }
 
 const listVerifiedBlocklists = `-- name: ListVerifiedBlocklists :many
-SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at FROM report_blocklists
+SELECT id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar FROM report_blocklists
 WHERE verified_at is NOT NULL
 `
 
@@ -255,6 +336,10 @@ func (q *Queries) ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist
 			&i.UserWalletAddress,
 			&i.CreatedAt,
 			&i.DisprovedAt,
+			&i.GuildID,
+			&i.GuildName,
+			&i.ReporterName,
+			&i.ReporterAvatar,
 		); err != nil {
 			return nil, err
 		}
@@ -273,7 +358,7 @@ const verifyBlocklist = `-- name: VerifyBlocklist :one
 UPDATE report_blocklists
 SET verified_at = NOW()
 WHERE id = $1
-RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at
+RETURNING id, http_address, verified_at, user_wallet_address, created_at, disproved_at, guild_id, guild_name, reporter_name, reporter_avatar
 `
 
 func (q *Queries) VerifyBlocklist(ctx context.Context, id uuid.UUID) (ReportBlocklist, error) {
@@ -286,6 +371,10 @@ func (q *Queries) VerifyBlocklist(ctx context.Context, id uuid.UUID) (ReportBloc
 		&i.UserWalletAddress,
 		&i.CreatedAt,
 		&i.DisprovedAt,
+		&i.GuildID,
+		&i.GuildName,
+		&i.ReporterName,
+		&i.ReporterAvatar,
 	)
 	return i, err
 }

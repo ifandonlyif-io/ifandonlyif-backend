@@ -173,6 +173,11 @@ func (server *Server) DisproveBlocklist(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, blocklist)
 }
 
+//func (server *Server) verify(e echo.Context) error {
+//   id := e.Param("id")
+//
+//}
+
 // blocklists godoc
 // @Summary      ListUnreviewedBlocklists
 // @Description  get all unreviewed blocklists
