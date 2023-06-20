@@ -129,10 +129,10 @@ func (server *Server) NonceHandler(c echo.Context) (err error) {
 	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
 	// }
 	resCode := &code{
-		Code: user.Nonce,
+		Code: user.Nonce.String,
 	}
 
-	if len(user.Nonce) > 0 {
+	if len(user.Nonce.String) > 0 {
 		return c.JSON(http.StatusOK, resCode)
 	}
 
@@ -196,12 +196,12 @@ func (server *Server) LoginHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	accesstoken, _, accessErr := server.accessTokenMaker.CreateToken(user.FullName, user.Wallet, server.config.AccessTokenDuration)
+	accesstoken, _, accessErr := server.accessTokenMaker.CreateToken(user.FullName.String, user.Wallet.String, server.config.AccessTokenDuration)
 	if accessErr != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	refreshtoken, _, refreshErr := server.refreshTokenMaker.CreateToken(user.FullName, user.Wallet, server.config.RefreshTokenDuration)
+	refreshtoken, _, refreshErr := server.refreshTokenMaker.CreateToken(user.FullName.String, user.Wallet.String, server.config.RefreshTokenDuration)
 	if refreshErr != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
@@ -224,34 +224,34 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
 	sig[crypto.RecoveryIDOffset] -= 27
-	msg := accounts.TextHash([]byte(user.Nonce))
+	msg := accounts.TextHash([]byte(user.Nonce.String))
 	recovered, err := crypto.SigToPub(msg, sig)
 
 	if err != nil {
-		user.Nonce = ""
+		user.Nonce.String = ""
 		return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrMissingSig)
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*recovered)
 
 	// check database string lower case
-	if util.IsLower(user.Wallet) {
+	if util.IsLower(user.Wallet.String) {
 		// compare with lowercase from recovery
-		if user.Wallet != strings.ToLower(recoveredAddr.Hex()) {
+		if user.Wallet.String != strings.ToLower(recoveredAddr.Hex()) {
 			return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 		}
 	}
 	// check database string upper case
-	if util.IsUpper(user.Wallet) {
+	if util.IsUpper(user.Wallet.String) {
 		// compare with lowercase from recovery
-		if user.Wallet != strings.ToUpper(recoveredAddr.Hex()) {
+		if user.Wallet.String != strings.ToUpper(recoveredAddr.Hex()) {
 			return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 		}
 	}
 	// check if Mixed with upper and lower
-	if !util.IsLower(user.Wallet) {
-		if !util.IsUpper(user.Wallet) {
+	if !util.IsLower(user.Wallet.String) {
+		if !util.IsUpper(user.Wallet.String) {
 			// check the original address
-			if user.Wallet != recoveredAddr.Hex() {
+			if user.Wallet.String != recoveredAddr.Hex() {
 				return db.GetUserByWalletAddressRow{}, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidAddress)
 			}
 		}
@@ -263,11 +263,11 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 		return user, echo.NewHTTPError(http.StatusUnauthorized, ErrInvalidNonce)
 	}
 
-	user.Nonce = nonce
+	user.Nonce.String = nonce
 
 	server.store.UpdateUserNonce(c.Request().Context(), db.UpdateUserNonceParams{
-		Wallet: sql.NullString{String: user.Wallet, Valid: true},
-		Nonce:  sql.NullString{String: user.Nonce, Valid: true},
+		Wallet: sql.NullString{String: user.Wallet.String, Valid: true},
+		Nonce:  sql.NullString{String: user.Nonce.String, Valid: true},
 	})
 
 	return user, nil

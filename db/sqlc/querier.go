@@ -12,6 +12,8 @@ import (
 )
 
 type Querier interface {
+	CheckBlocklists(ctx context.Context, id uuid.UUID) (CheckBlocklistsRow, error)
+	CheckExistBlocklists(ctx context.Context, httpAddress string) (uuid.UUID, error)
 	CreateAppliance(ctx context.Context, arg CreateApplianceParams) (AppliancesFromDiscordChannel, error)
 	CreateChannel(ctx context.Context, arg CreateChannelParams) (DiscordChannel, error)
 	CreateGasPrice(ctx context.Context, average sql.NullInt32) (GasPrice, error)
@@ -42,7 +44,7 @@ type Querier interface {
 	GetReportWhitelis(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetReportWhitelistUpdate(ctx context.Context, id uuid.UUID) (ReportWhitelist, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
-	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
+	GetUser(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByWalletAddress(ctx context.Context, wallet sql.NullString) (GetUserByWalletAddressRow, error)
 	GetUserForUpdate(ctx context.Context, id uuid.UUID) (User, error)
 	ListDisprovedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
