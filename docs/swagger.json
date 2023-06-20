@@ -234,6 +234,74 @@
                 }
             }
         },
+        "/checkBlocklists": {
+            "post": {
+                "description": "fetch blocklist by uri",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CheckBlocklists"
+                ],
+                "summary": "CheckBlocklists",
+                "parameters": [
+                    {
+                        "description": "uuid",
+                        "name": "uuid",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/checkExistBlocklists": {
+            "post": {
+                "description": "fetch blocklist by uri",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CheckExistBlocklists"
+                ],
+                "summary": "CheckExistBlocklists",
+                "parameters": [
+                    {
+                        "description": "uri",
+                        "name": "uri",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/checkUri": {
             "post": {
                 "description": "fetch blocklist by uri",
