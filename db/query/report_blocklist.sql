@@ -53,3 +53,16 @@ WHERE disproved_at is NOT NULL;
 SELECT * FROM report_blocklists
 WHERE disproved_at is NULL
 AND verified_at is NULL;
+
+-- name: CheckExistBlocklists :one
+SELECT id FROM report_blocklists WHERE http_address = $1;
+
+-- name: CheckBlocklists :one
+SELECT 
+    CASE 
+        WHEN verified_at IS NOT NULL THEN 'verified_at' 
+        WHEN disproved_at IS NOT NULL THEN 'disproved_at'
+    END AS review_status,
+    COALESCE(verified_at, disproved_at) AS time_stamp
+FROM report_blocklists
+WHERE id = $1;

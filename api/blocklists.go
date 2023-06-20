@@ -25,6 +25,10 @@ type CheckUriPayload struct {
 	Uri string `json:"uri"`
 }
 
+type CheckBlocklistsPayload struct {
+	UUID string `json:"uuid"`
+}
+
 // blocklists godoc
 // @Summary      getAllBlockLists
 // @Description  get all blocklists
@@ -215,6 +219,73 @@ func (server *Server) GetBlocklistByUri(c echo.Context) (err error) {
 	}
 
 	_, errGetList := server.store.GetBlocklistByUri(c.Request().Context(), u.Uri)
+
+	if errGetList != nil {
+
+		if errGetList == sql.ErrNoRows {
+			return c.JSON(http.StatusOK, false)
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+		}
+	}
+
+	return c.JSON(http.StatusOK, true)
+}
+
+// blocklists godoc
+// @Summary      CheckExistBlocklists
+// @Description  fetch blocklist by uri
+// @Tags         CheckExistBlocklists
+// @param uri body string true "uri"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /checkExistBlocklists [POST]
+func (server *Server) CheckExistBlocklists(c echo.Context) (err error) {
+
+	var cb CheckUriPayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &cb); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+
+	blocklists, errGetList := server.store.CheckExistBlocklists(c.Request().Context(), cb.Uri)
+
+	if errGetList != nil {
+
+		if errGetList == sql.ErrNoRows {
+			return c.JSON(http.StatusOK, false)
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, errGetList)
+		}
+	}
+
+	return c.JSON(http.StatusOK, blocklists)
+}
+
+// blocklists godoc
+// @Summary      CheckBlocklists
+// @Description  fetch blocklist by uri
+// @Tags         CheckBlocklists
+// @param uuid body string true "uuid"
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /checkBlocklists [POST]
+func (server *Server) CheckBlocklists(c echo.Context) (err error) {
+
+	var cb CheckBlocklistsPayload
+
+	if errPayload := (&echo.DefaultBinder{}).BindBody(c, &cb); errPayload != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errPayload)
+	}
+
+	queryUuid, errUuid := uuid.Parse(cb.UUID)
+	if errUuid != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, errUuid)
+	}
+
+	_, errGetList := server.store.CheckBlocklists(c.Request().Context(), queryUuid)
 
 	if errGetList != nil {
 
