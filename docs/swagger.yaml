@@ -161,6 +161,50 @@ paths:
       summary: fetchUserNfts
       tags:
       - fetchUserNfts
+  /checkBlocklists:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uri
+      parameters:
+      - description: uuid
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: CheckBlocklists
+      tags:
+      - CheckBlocklists
+  /checkExistBlocklists:
+    post:
+      consumes:
+      - '*/*'
+      description: fetch blocklist by uri
+      parameters:
+      - description: uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: CheckExistBlocklists
+      tags:
+      - CheckExistBlocklists
   /checkUri:
     post:
       consumes:
