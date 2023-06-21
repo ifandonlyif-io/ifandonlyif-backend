@@ -26,8 +26,8 @@ func (q *Queries) CreateGasPrice(ctx context.Context, average sql.NullInt32) (Ga
 }
 
 const getAveragePriceByLastDay = `-- name: GetAveragePriceByLastDay :many
-  SELECT COALESCE(average),
-  COALESCE(created_at)
+ SELECT COALESCE(average) AS average,
+  COALESCE(created_at) AS created_at
   FROM gas_prices
   ORDER BY created_at DESC
   LIMIT 24
