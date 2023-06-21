@@ -24,9 +24,6 @@ type Server struct {
 
 // NewServer creates a new HTTP server and set up routing.
 func NewServer(config util.Config, store db.Store) (*Server, error) {
-	fmt.Println(config.AccessTokenDuration)
-	fmt.Println(config.AccessTokenSymmetricKey)
-	fmt.Println(config.DBDriver)
 	accessTokenMaker, accessErr := token.NewJWTMaker(config.AccessTokenSymmetricKey)
 	if accessErr != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", accessErr)
