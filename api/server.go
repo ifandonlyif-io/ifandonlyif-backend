@@ -87,6 +87,8 @@ func (server *Server) setupRouter() {
 	e.GET("/discord/appliances", server.appliance)
 	e.GET("/discord/channels", server.channels)
 	e.PATCH("/discord/approve/:id", server.approve)
+	e.PATCH("/discord/channel/lock/:id", server.lockChannel)
+	e.PATCH("/discord/channel/unlock/:id", server.UnlockChannel)
 	//e.PATCH("report/:id/verify", server.verify)
 	e.POST("/checkUri", server.GetBlocklistByUri)
 	e.GET("/ethToUsd", server.EthToUsd)

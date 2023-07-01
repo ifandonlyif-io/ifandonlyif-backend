@@ -22,7 +22,9 @@ func (server *Server) report(e echo.Context) error {
 	reporterName := e.FormValue("reporter_name")
 	reporterAvatar := e.FormValue("reporter_avatar")
 
-	if !server.checkChannelExist(guildId) {
+	channel, _ := server.store.GetChannelsByGuildId(context.Background(), guildId)
+
+	if channel.GuildID == "" {
 		response.Message = "unrecognized channel"
 		apply, _ := server.store.GetApplianceByGuildId(e.Request().Context(), guildId)
 
@@ -32,6 +34,13 @@ func (server *Server) report(e echo.Context) error {
 		}
 
 		return e.JSON(http.StatusForbidden, response)
+	}
+
+	if channel.LockedAt.Valid {
+		response.Message = "this channel have been locked"
+		response.Data = channel
+
+		return e.JSON(http.StatusLocked, response)
 	}
 
 	_, err := url.ParseRequestURI(inputUrl)
@@ -220,4 +229,47 @@ func (server *Server) channels(e echo.Context) error {
 	response.Message = "get channels"
 
 	return e.JSON(200, response)
+}
+
+func (server *Server) lockChannel(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	id, _ := uuid.Parse(e.Param("id"))
+
+	channel, err := server.store.LockDiscordChannel(e.Request().Context(), id)
+	if err != nil {
+		response.Message = err.Error()
+		response.Data = err
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	response.Message = "channel locked"
+	response.Data = channel
+
+	return e.JSON(http.StatusOK, response)
+}
+
+func (server *Server) UnlockChannel(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	id, _ := uuid.Parse(e.Param("id"))
+
+	channel, err := server.store.UnlockDiscordChannel(e.Request().Context(), id)
+	if err != nil {
+		response.Message = err.Error()
+		response.Data = err
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	response.Message = "channel locked"
+	response.Data = channel
+
+	return e.JSON(http.StatusOK, response)
+
 }

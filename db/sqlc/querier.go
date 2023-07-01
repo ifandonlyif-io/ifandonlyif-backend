@@ -54,6 +54,10 @@ type Querier interface {
 	ListUsers(ctx context.Context) ([]User, error)
 	ListVerifiedBlocklists(ctx context.Context) ([]ReportBlocklist, error)
 	// :param id: string
+	LockDiscordChannel(ctx context.Context, id uuid.UUID) (DiscordChannel, error)
+	// :param id: string
+	UnlockDiscordChannel(ctx context.Context, id uuid.UUID) (DiscordChannel, error)
+	// :param id: string
 	// :param isApproved: bool
 	UpdateApplianceChannel(ctx context.Context, arg UpdateApplianceChannelParams) (AppliancesFromDiscordChannel, error)
 	UpdateReportWhitelisVerified(ctx context.Context, arg UpdateReportWhitelisVerifiedParams) (ReportWhitelist, error)

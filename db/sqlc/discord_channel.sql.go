@@ -41,7 +41,7 @@ INSERT INTO discord_channels (
   name, guild_id
 ) values (
   $1, $2
-) RETURNING id, name, guild_id, created_at
+) RETURNING id, name, guild_id, created_at, locked_at
 `
 
 type CreateChannelParams struct {
@@ -57,6 +57,7 @@ func (q *Queries) CreateChannel(ctx context.Context, arg CreateChannelParams) (D
 		&i.Name,
 		&i.GuildID,
 		&i.CreatedAt,
+		&i.LockedAt,
 	)
 	return i, err
 }
@@ -105,7 +106,7 @@ func (q *Queries) GetAllAppliances(ctx context.Context) ([]AppliancesFromDiscord
 }
 
 const getAllChannels = `-- name: GetAllChannels :many
-SELECT id, name, guild_id, created_at FROM discord_channels
+SELECT id, name, guild_id, created_at, locked_at FROM discord_channels
 `
 
 func (q *Queries) GetAllChannels(ctx context.Context) ([]DiscordChannel, error) {
@@ -122,6 +123,7 @@ func (q *Queries) GetAllChannels(ctx context.Context) ([]DiscordChannel, error) 
 			&i.Name,
 			&i.GuildID,
 			&i.CreatedAt,
+			&i.LockedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -174,7 +176,7 @@ func (q *Queries) GetApplianceChannelById(ctx context.Context, id uuid.UUID) (Ap
 }
 
 const getChannelById = `-- name: GetChannelById :one
-SELECT id, name, guild_id, created_at FROM discord_channels
+SELECT id, name, guild_id, created_at, locked_at FROM discord_channels
 WHERE id = $1
 `
 
@@ -186,12 +188,13 @@ func (q *Queries) GetChannelById(ctx context.Context, id uuid.UUID) (DiscordChan
 		&i.Name,
 		&i.GuildID,
 		&i.CreatedAt,
+		&i.LockedAt,
 	)
 	return i, err
 }
 
 const getChannelsByGuildId = `-- name: GetChannelsByGuildId :one
-SELECT id, name, guild_id, created_at FROM discord_channels
+SELECT id, name, guild_id, created_at, locked_at FROM discord_channels
 WHERE guild_id = $1
 `
 
@@ -203,6 +206,49 @@ func (q *Queries) GetChannelsByGuildId(ctx context.Context, guildID string) (Dis
 		&i.Name,
 		&i.GuildID,
 		&i.CreatedAt,
+		&i.LockedAt,
+	)
+	return i, err
+}
+
+const lockDiscordChannel = `-- name: LockDiscordChannel :one
+UPDATE discord_channels
+SET "locked_at" = now()
+WHERE "id" = $1
+RETURNING id, name, guild_id, created_at, locked_at
+`
+
+// :param id: string
+func (q *Queries) LockDiscordChannel(ctx context.Context, id uuid.UUID) (DiscordChannel, error) {
+	row := q.db.QueryRowContext(ctx, lockDiscordChannel, id)
+	var i DiscordChannel
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.GuildID,
+		&i.CreatedAt,
+		&i.LockedAt,
+	)
+	return i, err
+}
+
+const unlockDiscordChannel = `-- name: UnlockDiscordChannel :one
+UPDATE discord_channels
+SET "locked_at" = null
+WHERE "id" = $1
+RETURNING id, name, guild_id, created_at, locked_at
+`
+
+// :param id: string
+func (q *Queries) UnlockDiscordChannel(ctx context.Context, id uuid.UUID) (DiscordChannel, error) {
+	row := q.db.QueryRowContext(ctx, unlockDiscordChannel, id)
+	var i DiscordChannel
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.GuildID,
+		&i.CreatedAt,
+		&i.LockedAt,
 	)
 	return i, err
 }
