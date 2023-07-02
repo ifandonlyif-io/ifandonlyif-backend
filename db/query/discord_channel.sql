@@ -40,3 +40,17 @@ UPDATE appliances_from_discord_channel
 SET "is_approved" = $2, "verified_at" = now()
 WHERE "id" = $1
 RETURNING *;
+
+-- name: LockDiscordChannel :one
+-- :param id: string
+UPDATE discord_channels
+SET "locked_at" = now()
+WHERE "id" = $1
+RETURNING *;
+
+-- name: UnlockDiscordChannel :one
+-- :param id: string
+UPDATE discord_channels
+SET "locked_at" = null
+WHERE "id" = $1
+RETURNING *;

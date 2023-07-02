@@ -21,10 +21,11 @@ type AppliancesFromDiscordChannel struct {
 }
 
 type DiscordChannel struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	GuildID   string    `json:"guildID"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID        uuid.UUID    `json:"id"`
+	Name      string       `json:"name"`
+	GuildID   string       `json:"guildID"`
+	CreatedAt time.Time    `json:"createdAt"`
+	LockedAt  sql.NullTime `json:"lockedAt"`
 }
 
 type GasPrice struct {

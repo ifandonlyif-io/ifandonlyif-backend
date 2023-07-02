@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"database/sql"
+	"github.com/google/uuid"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -20,7 +22,9 @@ func (server *Server) report(e echo.Context) error {
 	reporterName := e.FormValue("reporter_name")
 	reporterAvatar := e.FormValue("reporter_avatar")
 
-	if !server.checkChannelExist(guildId) {
+	channel, _ := server.store.GetChannelsByGuildId(context.Background(), guildId)
+
+	if channel.GuildID == "" {
 		response.Message = "unrecognized channel"
 		apply, _ := server.store.GetApplianceByGuildId(e.Request().Context(), guildId)
 
@@ -30,6 +34,13 @@ func (server *Server) report(e echo.Context) error {
 		}
 
 		return e.JSON(http.StatusForbidden, response)
+	}
+
+	if channel.LockedAt.Valid {
+		response.Message = "this channel have been locked"
+		response.Data = channel
+
+		return e.JSON(http.StatusLocked, response)
 	}
 
 	_, err := url.ParseRequestURI(inputUrl)
@@ -115,4 +126,150 @@ func (server *Server) apply(e echo.Context) error {
 	response.Data = appliance
 
 	return e.JSON(http.StatusCreated, response)
+}
+
+func (server *Server) appliance(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	appliances, _ := server.store.GetAllAppliances(e.Request().Context())
+
+	response.Data = appliances
+	response.Message = "get appliances"
+
+	return e.JSON(http.StatusOK, response)
+}
+
+type approveRequest struct {
+	IsApprove bool `json:"is_approved"`
+}
+
+func (server *Server) approve(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	req := &approveRequest{}
+	applianceId := e.Param("id")
+
+	if err := e.Bind(req); err != nil {
+		response.Message = err.Error()
+		return e.JSON(http.StatusBadRequest, response)
+	}
+
+	id, _ := uuid.Parse(applianceId)
+
+	appliance, _ := server.store.GetApplianceChannelById(e.Request().Context(), id)
+
+	if !appliance.VerifiedAt.Valid {
+		updateAppliance, err := server.store.UpdateApplianceChannel(e.Request().Context(), db.UpdateApplianceChannelParams{
+			ID: id,
+			IsApproved: sql.NullBool{
+				Bool:  req.IsApprove,
+				Valid: true,
+			},
+		})
+
+		if err != nil {
+			response.Message = err.Error()
+			return e.JSON(http.StatusInternalServerError, response)
+		}
+
+		if req.IsApprove {
+			channel, err := server.store.CreateChannel(e.Request().Context(), db.CreateChannelParams{
+				Name:    appliance.ChannelName,
+				GuildID: appliance.GuildID,
+			})
+			if err != nil {
+				response.Message = err.Error()
+				return e.JSON(http.StatusInternalServerError, response)
+			}
+			response.Message = "appliance approved"
+			response.Data = struct {
+				Channel   interface{} `json:"channel"`
+				Appliance interface{} `json:"appliance"`
+			}{
+				Channel:   channel,
+				Appliance: updateAppliance,
+			}
+
+		} else {
+			response.Message = "appliance not approved"
+			response.Data = struct {
+				Appliance interface{} `json:"appliance"`
+			}{
+				Appliance: updateAppliance,
+			}
+
+		}
+	} else {
+		response.Message = "this appliance have verified before"
+		response.Data = struct {
+			Appliance interface{} `json:"appliance"`
+		}{
+			Appliance: appliance,
+		}
+	}
+
+	return e.JSON(200, response)
+}
+
+func (server *Server) channels(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	channels, _ := server.store.GetAllChannels(e.Request().Context())
+
+	response.Data = channels
+	response.Message = "get channels"
+
+	return e.JSON(200, response)
+}
+
+func (server *Server) lockChannel(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	id, _ := uuid.Parse(e.Param("id"))
+
+	channel, err := server.store.LockDiscordChannel(e.Request().Context(), id)
+	if err != nil {
+		response.Message = err.Error()
+		response.Data = err
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	response.Message = "channel locked"
+	response.Data = channel
+
+	return e.JSON(http.StatusOK, response)
+}
+
+func (server *Server) UnlockChannel(e echo.Context) error {
+	response := reportResponse{
+		Message: "",
+		Data:    nil,
+	}
+
+	id, _ := uuid.Parse(e.Param("id"))
+
+	channel, err := server.store.UnlockDiscordChannel(e.Request().Context(), id)
+	if err != nil {
+		response.Message = err.Error()
+		response.Data = err
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	response.Message = "channel locked"
+	response.Data = channel
+
+	return e.JSON(http.StatusOK, response)
+
 }
