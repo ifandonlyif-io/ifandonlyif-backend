@@ -71,7 +71,7 @@ func (server *Server) renewAccessToken(ctx echo.Context) (errEcho error) {
 	accessToken, accessPayload, err := server.accessTokenMaker.CreateToken(
 		refreshPayload.UserName,
 		refreshPayload.Wallet,
-		server.config.RefreshTokenDuration,
+		server.config.AccessTokenDuration,
 	)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
