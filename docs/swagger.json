@@ -326,6 +326,167 @@
                 }
             }
         },
+        "/discord/appliances": {
+            "get": {
+                "description": "get all appliances, for admin page",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Page"
+                ],
+                "summary": "Appliances from discord bot",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/apply": {
+            "post": {
+                "description": "apply api for discord bot",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Discord Bot"
+                ],
+                "summary": "Apply from discord bot",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/approve/:id": {
+            "patch": {
+                "description": "approve discord channel to report project",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Page"
+                ],
+                "summary": "Approve discord channel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/channel/lock/:id": {
+            "patch": {
+                "description": "lock discord channel to prevent report project",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Page"
+                ],
+                "summary": "Lock discord channel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/channel/unlock/:id": {
+            "patch": {
+                "description": "unlock discord channel to allow report project",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Page"
+                ],
+                "summary": "Unlock discord channel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/channels": {
+            "get": {
+                "description": "get all discord channels can report projects",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Page"
+                ],
+                "summary": "Get all discord channels",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/discord/report": {
+            "post": {
+                "description": "report api for discord bot",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Discord Bot"
+                ],
+                "summary": "Report from discord bot",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/ethToUsd": {
             "get": {
                 "description": "get current 1 ETH to USD price",
