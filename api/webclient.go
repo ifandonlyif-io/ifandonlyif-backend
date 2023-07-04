@@ -54,7 +54,6 @@ func (server *Server) RunCronFetchGas() {
 	})
 
 	cronjob.Start()
-	fmt.Println("Fetch Gas Cron Job Started !!!!")
 
 }
 
