@@ -265,6 +265,111 @@ paths:
       summary: code
       tags:
       - code
+  /discord/appliances:
+    get:
+      consumes:
+      - '*/*'
+      description: get all appliances, for admin page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Appliances from discord bot
+      tags:
+      - Admin Page
+  /discord/apply:
+    post:
+      consumes:
+      - '*/*'
+      description: apply api for discord bot
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+      summary: Apply from discord bot
+      tags:
+      - Discord Bot
+  /discord/approve/:id:
+    patch:
+      consumes:
+      - '*/*'
+      description: approve discord channel to report project
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Approve discord channel
+      tags:
+      - Admin Page
+  /discord/channel/lock/:id:
+    patch:
+      consumes:
+      - '*/*'
+      description: lock discord channel to prevent report project
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Lock discord channel
+      tags:
+      - Admin Page
+  /discord/channel/unlock/:id:
+    patch:
+      consumes:
+      - '*/*'
+      description: unlock discord channel to allow report project
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Unlock discord channel
+      tags:
+      - Admin Page
+  /discord/channels:
+    get:
+      consumes:
+      - '*/*'
+      description: get all discord channels can report projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get all discord channels
+      tags:
+      - Admin Page
+  /discord/report:
+    post:
+      consumes:
+      - '*/*'
+      description: report api for discord bot
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+      summary: Report from discord bot
+      tags:
+      - Discord Bot
   /ethToUsd:
     get:
       consumes:

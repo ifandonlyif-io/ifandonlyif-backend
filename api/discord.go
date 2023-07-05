@@ -10,6 +10,14 @@ import (
 	"net/url"
 )
 
+// blocklists godoc
+// @Summary      Report from discord bot
+// @Description  report api for discord bot
+// @Tags         Discord Bot
+// @Accept */*
+// @produce application/json
+// @Success      201  {string}  StatusCreated
+// @Router       /discord/report [POST]
 func (server *Server) report(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -93,6 +101,14 @@ type reportResponse struct {
 	Data    interface{} `json:"data"`
 }
 
+// blocklists godoc
+// @Summary      Apply from discord bot
+// @Description  apply api for discord bot
+// @Tags         Discord Bot
+// @Accept */*
+// @produce application/json
+// @Success      201  {string}  StatusCreated
+// @Router       /discord/apply [POST]
 func (server *Server) apply(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -128,6 +144,14 @@ func (server *Server) apply(e echo.Context) error {
 	return e.JSON(http.StatusCreated, response)
 }
 
+// blocklists godoc
+// @Summary      Appliances from discord bot
+// @Description  get all appliances, for admin page
+// @Tags         Admin Page
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /discord/appliances [GET]
 func (server *Server) appliance(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -146,6 +170,14 @@ type approveRequest struct {
 	IsApprove bool `json:"is_approved"`
 }
 
+// blocklists godoc
+// @Summary      Approve discord channel
+// @Description  approve discord channel to report project
+// @Tags         Admin Page
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /discord/approve/:id [PATCH]
 func (server *Server) approve(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -217,6 +249,14 @@ func (server *Server) approve(e echo.Context) error {
 	return e.JSON(200, response)
 }
 
+// blocklists godoc
+// @Summary      Get all discord channels
+// @Description  get all discord channels can report projects
+// @Tags         Admin Page
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /discord/channels [GET]
 func (server *Server) channels(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -231,6 +271,14 @@ func (server *Server) channels(e echo.Context) error {
 	return e.JSON(200, response)
 }
 
+// blocklists godoc
+// @Summary      Lock discord channel
+// @Description  lock discord channel to prevent report project
+// @Tags         Admin Page
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /discord/channel/lock/:id [PATCH]
 func (server *Server) lockChannel(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
@@ -252,6 +300,14 @@ func (server *Server) lockChannel(e echo.Context) error {
 	return e.JSON(http.StatusOK, response)
 }
 
+// blocklists godoc
+// @Summary      Unlock discord channel
+// @Description  unlock discord channel to allow report project
+// @Tags         Admin Page
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /discord/channel/unlock/:id [PATCH]
 func (server *Server) UnlockChannel(e echo.Context) error {
 	response := reportResponse{
 		Message: "",
