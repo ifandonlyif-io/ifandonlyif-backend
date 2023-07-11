@@ -16,7 +16,7 @@ type Querier interface {
 	CheckExistBlocklists(ctx context.Context, httpAddress string) (uuid.UUID, error)
 	CreateAppliance(ctx context.Context, arg CreateApplianceParams) (AppliancesFromDiscordChannel, error)
 	CreateChannel(ctx context.Context, arg CreateChannelParams) (DiscordChannel, error)
-	CreateGasPrice(ctx context.Context, average sql.NullInt32) (GasPrice, error)
+	CreateGasPrice(ctx context.Context, average sql.NullString) (GasPrice, error)
 	CreateIffNft(ctx context.Context, arg CreateIffNftParams) (IffNft, error)
 	CreateReportBlocklist(ctx context.Context, arg CreateReportBlocklistParams) (ReportBlocklist, error)
 	CreateReportWhitelist(ctx context.Context, arg CreateReportWhitelistParams) (ReportWhitelist, error)
