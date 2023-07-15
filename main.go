@@ -11,6 +11,7 @@ import (
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
 	"github.com/ifandonlyif-io/ifandonlyif-backend/util"
 	_ "github.com/lib/pq"
+	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 
 // @title Ifandonlyif API
@@ -40,6 +41,8 @@ func main() {
 	runDBMigration(config.MigrationURL, config.DBSource)
 	store := db.NewStore(conn)
 
+	runProfiler(config.EnableProfiler)
+
 	runEchoServer(config, store)
 
 }
@@ -55,6 +58,20 @@ func runDBMigration(migrationURL string, dbSource string) {
 	}
 
 	log.Println("db migrated successfully")
+}
+
+func runProfiler(enable bool) {
+	if !enable {
+		return
+	}
+
+	_, err := profiler.Start(profiler.Config{
+		ApplicationName: "ifandonlyif-backend",
+		ServerAddress:   "http://pyroscope:4040",
+	})
+	if err != nil {
+		log.Fatal("failed to start pyroscope:", err)
+	}
 }
 
 func runEchoServer(config util.Config, store db.Store) {
