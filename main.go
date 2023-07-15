@@ -67,7 +67,7 @@ func runProfiler(enable bool) {
 
 	_, err := profiler.Start(profiler.Config{
 		ApplicationName: "ifandonlyif-backend",
-		ServerAddress:   "http://pyroscope:4040",
+		ServerAddress:   "http://pyroscope.grafana:4040",
 		Logger:          util.NewLogger(),
 	})
 	if err != nil {
