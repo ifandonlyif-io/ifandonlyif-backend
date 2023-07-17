@@ -54,7 +54,7 @@ func (server *Server) RunCronFetchGas() {
 		if errHex != nil {
 			fmt.Println("Can not convert Hex!!")
 		}
-		var gWei float64 = float64(averagePrice) / 10000000000
+		var gWei float64 = float64(averagePrice) / 1000000000
 		gWeiText := fmt.Sprintf("%.2f", gWei)
 
 		createGas, dberr := server.store.CreateGasPrice(context.Background(), sql.NullString{String: gWeiText, Valid: true})
