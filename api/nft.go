@@ -78,7 +78,14 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, resp.String())
 }
 
-// ToDo: Fetch ALL IFF NFTs Count: return Number
+// nft godoc
+// @Summary      getIffNftById
+// @Description  fetch limited IffNft
+// @Tags         getIffNftById
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /getIffNftById [GET]
 func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 
 	var p iffid
