@@ -88,10 +88,12 @@ func (server *Server) setupRouter() {
 	//e.PATCH("report/:id/verify", server.verify)
 	e.POST("/checkUri", server.GetBlocklistByUri)
 	e.GET("/ethToUsd", server.EthToUsd)
+	e.GET("/getIffNftById", server.FetchIffNftById)
 	e.POST("/checkExistBlocklists", server.CheckExistBlocklists)
 	e.POST("/checkBlocklists", server.CheckBlocklists)
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
+	auth.POST("/fetcUserIffNft", server.FetchUserIffNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
 	api.GET("/listDisprovedBlocklists", server.ListDisprovedBlocklists)
