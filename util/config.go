@@ -19,6 +19,8 @@ type Config struct {
 	AccessTokenDuration      time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	RefreshTokenDuration     time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	EnableProfiler           bool          `mapstructure:"ENABLE_PROFILER"`
+	AlchemyApiUrl            string        `mapstructure:"ALCHEMY_API_URL"`
+	IFFNftContractAddress    string        `mapstructure:"IFFNFT_CONTRACT_ADDRESS"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

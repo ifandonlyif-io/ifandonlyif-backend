@@ -59,7 +59,7 @@ func (server *Server) FetchUserNfts(c echo.Context) (err error) {
 
 	// sepolia net
 
-	reqUrl := "https://eth-sepolia.g.alchemy.com/v2/i8RTBcKFG3U1qEUbUprJXDatOggaZxcE/getNFTs?" + params.Encode()
+	reqUrl := server.config.AlchemyApiUrl + "getNFTs?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().

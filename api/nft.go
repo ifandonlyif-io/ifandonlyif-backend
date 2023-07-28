@@ -30,8 +30,7 @@ func (server *Server) ListNftProjects(c echo.Context) error {
 	return c.JSON(http.StatusOK, nftprojs)
 }
 
-// ToDo: Fetch IFF NFTs with user wallet
-// mintit godoc
+// nft godoc
 // @Summary      fetchUserIffNfts
 // @Description  get USER IffNFTS
 // @Tags         fetchUserIffNfts
@@ -52,7 +51,7 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 	client.Header.Add("accept", "application/json")
 	params := URL.Values{}
 
-	params.Set("contractAddresses", "0x507AA149A42012AD74C1E40E076a3f2391E13b61")
+	params.Set("contractAddresses", server.config.IFFNftContractAddress)
 
 	// set woner wallet address
 	params.Set("owner", payload.Wallet)
@@ -64,8 +63,7 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 	// reqUrl := "https://eth-goerli.g.alchemy.com/v2/JJqZwPLyThiBz_TowjruMBZWKiL9UIae/getNFTs?" + params.Encode()
 
 	// sepolia net
-
-	reqUrl := "https://eth-sepolia.g.alchemy.com/v2/i8RTBcKFG3U1qEUbUprJXDatOggaZxcE/getNFTs?" + params.Encode()
+	reqUrl := server.config.AlchemyApiUrl + "getNFTs?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().
@@ -99,7 +97,7 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 	client.Header.Add("accept", "application/json")
 	params := URL.Values{}
 
-	params.Set("contractAddresses", "0x507AA149A42012AD74C1E40E076a3f2391E13b61")
+	params.Set("contractAddresses", server.config.IFFNftContractAddress)
 	params.Set("withMetadata", "true")
 	params.Set("startToken", p.Iffid)
 	params.Set("limit", "1")
@@ -111,7 +109,7 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 
 	// sepolia net
 
-	reqUrl := "https://eth-sepolia.g.alchemy.com/v2/i8RTBcKFG3U1qEUbUprJXDatOggaZxcE/getNFTsForCollection?" + params.Encode()
+	reqUrl := server.config.AlchemyApiUrl + "getNFTsForCollection?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().
@@ -123,3 +121,5 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, resp.String())
 }
+
+// Todo list nft counts
