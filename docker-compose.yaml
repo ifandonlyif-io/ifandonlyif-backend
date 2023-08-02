@@ -26,7 +26,7 @@ services:
       - ACCESS_TOKEN_DURATION=15m
       - REFRESH_TOKEN_DURATION=24h
       - ALCHEMY_API_URL=https://eth-sepolia.g.alchemy.com/v2/i8RTBcKFG3U1qEUbUprJXDatOggaZxcE/
-      - IFFNFT_CONTRACT_ADDRESS=0x507AA149A42012AD74C1E40E076a3f2391E13b61
+      - IFFNFT_CONTRACT_ADDRESS=0xaA826D46b7fE6BDFA7CDaEE27067d3260F73228C
     depends_on:
       - postgres
     entrypoint:
