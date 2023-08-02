@@ -93,7 +93,7 @@ func (server *Server) setupRouter() {
 	e.POST("/checkBlocklists", server.CheckBlocklists)
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
-	auth.POST("/fetcUserIffNft", server.FetchUserIffNfts)
+	auth.POST("/fetchUserIffNft", server.FetchUserIffNfts)
 	// Key - Authentication Middleware
 	api.GET("/getAllBlockLists", server.GetAllBlockLists)
 	api.GET("/listDisprovedBlocklists", server.ListDisprovedBlocklists)
