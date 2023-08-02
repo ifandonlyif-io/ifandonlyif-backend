@@ -51,7 +51,7 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 	client.Header.Add("accept", "application/json")
 	params := URL.Values{}
 
-	params.Set("contractAddresses", server.config.IFFNftContractAddress)
+	params.Set("contractAddresses[]", server.config.IFFNftContractAddress)
 
 	// set woner wallet address
 	params.Set("owner", payload.Wallet)
@@ -97,7 +97,7 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 	client.Header.Add("accept", "application/json")
 	params := URL.Values{}
 
-	params.Set("contractAddresses", server.config.IFFNftContractAddress)
+	params.Set("contractAddresses[]", server.config.IFFNftContractAddress)
 	params.Set("withMetadata", "true")
 	params.Set("startToken", p.Iffid)
 	params.Set("limit", "1")

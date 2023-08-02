@@ -46,7 +46,7 @@ func (server *Server) FetchUserNfts(c echo.Context) (err error) {
 
 	// iterate array
 	for i := range nftprojs {
-		params.Add("contractAddresses", nftprojs[i].ContractAddress)
+		params.Add("contractAddresses[]", nftprojs[i].ContractAddress)
 	}
 
 	// set woner wallet address
