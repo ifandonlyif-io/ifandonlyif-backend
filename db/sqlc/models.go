@@ -29,9 +29,9 @@ type DiscordChannel struct {
 }
 
 type GasPrice struct {
-	ID        int64         `json:"id"`
-	Average   sql.NullInt32 `json:"average"`
-	CreatedAt sql.NullTime  `json:"createdAt"`
+	ID        int64          `json:"id"`
+	Average   sql.NullString `json:"average"`
+	CreatedAt sql.NullTime   `json:"createdAt"`
 }
 
 type IffNft struct {

@@ -14,14 +14,49 @@ require (
 )
 
 require (
+	github.com/Microsoft/go-winio v0.5.2 // indirect
+	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
+	github.com/aquasecurity/libbpfgo v0.3.0-libbpf-0.8.0 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
+	github.com/emicklei/go-restful v2.16.0+incompatible // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/gnostic v0.5.7-v3refs // indirect
+	github.com/google/gofuzz v1.2.0 // indirect
+	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/mitchellh/go-ps v1.0.0 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/pyroscope-io/dotnetdiag v1.2.1 // indirect
+	github.com/pyroscope-io/pyroscope v0.37.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/shirou/gopsutil v3.21.4+incompatible // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.6 // indirect
+	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/urfave/cli/v2 v2.10.2 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
+	golang.org/x/term v0.9.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/inf.v0 v0.9.1 // indirect
+	k8s.io/api v0.24.0 // indirect
+	k8s.io/apimachinery v0.24.0 // indirect
+	k8s.io/client-go v0.24.0 // indirect
+	k8s.io/klog/v2 v2.60.1 // indirect
+	k8s.io/kube-openapi v0.0.0-20220328201542-3ee0da9b0b42 // indirect
+	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9 // indirect
+	sigs.k8s.io/json v0.0.0-20211208200746-9f7c6b3444d2 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.2.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 

@@ -18,7 +18,7 @@ INSERT INTO gas_prices (
 ) RETURNING id, average, created_at
 `
 
-func (q *Queries) CreateGasPrice(ctx context.Context, average sql.NullInt32) (GasPrice, error) {
+func (q *Queries) CreateGasPrice(ctx context.Context, average sql.NullString) (GasPrice, error) {
 	row := q.db.QueryRowContext(ctx, createGasPrice, average)
 	var i GasPrice
 	err := row.Scan(&i.ID, &i.Average, &i.CreatedAt)
@@ -34,8 +34,8 @@ const getAveragePriceByLastDay = `-- name: GetAveragePriceByLastDay :many
 `
 
 type GetAveragePriceByLastDayRow struct {
-	Average   sql.NullInt32 `json:"average"`
-	CreatedAt sql.NullTime  `json:"createdAt"`
+	Average   sql.NullString `json:"average"`
+	CreatedAt sql.NullTime   `json:"createdAt"`
 }
 
 func (q *Queries) GetAveragePriceByLastDay(ctx context.Context) ([]GetAveragePriceByLastDayRow, error) {

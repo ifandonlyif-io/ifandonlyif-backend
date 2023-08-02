@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -15,11 +17,11 @@ import (
 )
 
 type GasPrices struct {
-	Average int32 `json:"average"`
+	Average string `json:"result"`
 }
 
 type GasInfo struct {
-	Average   int32  `json:"average"`
+	Average   string `json:"average"`
 	CreatedAt string `json:"createdAt"`
 }
 
@@ -30,10 +32,10 @@ func (server *Server) RunCronFetchGas() {
 	cronjob := cron.New()
 
 	// cronjob.AddFunc("@hourly", func() {
-	cronjob.AddFunc("0 * * * *", func() {
+	cronjob.AddFunc("* * * * *", func() {
 		resp, err := client.R().
 			EnableTrace().
-			Get("https://ethgasstation.info/api/ethgasAPI.json")
+			Get("https://api.etherscan.io/api?module=proxy&action=eth_gasPrice&apikey=4Y6CC9H78BT4KF4NZKU7FU2Z3XA3CC4QE7")
 
 		if err != nil {
 			fmt.Println("No response from request")
@@ -41,11 +43,21 @@ func (server *Server) RunCronFetchGas() {
 
 		var gp GasPrices
 
-		if err := json.Unmarshal(resp.Body(), &gp); err != nil { // Parse []byte to the go struct pointer
+		if errJson := json.Unmarshal(resp.Body(), &gp); errJson != nil { // Parse []byte to the go struct pointer
 			fmt.Println("Can not unmarshal JSON")
 		}
+		// use the parseInt() function to convert
 
-		createGas, dberr := server.store.CreateGasPrice(context.Background(), sql.NullInt32{Int32: int32(gp.Average), Valid: true})
+		averagePrice, errHex := strconv.ParseInt(hexaNumberToInteger(gp.Average), 16, 64)
+
+		// in case of any error
+		if errHex != nil {
+			fmt.Println("Can not convert Hex!!")
+		}
+		var gWei float64 = float64(averagePrice) / 1000000000
+		gWeiText := fmt.Sprintf("%.2f", gWei)
+
+		createGas, dberr := server.store.CreateGasPrice(context.Background(), sql.NullString{String: gWeiText, Valid: true})
 		if dberr != nil {
 			return
 		}
@@ -59,7 +71,7 @@ func (server *Server) RunCronFetchGas() {
 
 // gasInfo godoc
 // @Summary      gasInfo
-// @Description  get 24 hours gas prices
+// @Description  get every minutes gas prices
 // @Tags         gasInfo
 // @Accept */*
 // @produce application/json
@@ -76,10 +88,17 @@ func (server *Server) GasHandler(c echo.Context) (err error) {
 	for i := 0; i < len(getGasInfo); i++ {
 		field := getGasInfo[i]
 		if field.Average.Valid && field.CreatedAt.Valid {
-			newGasInfo = append(newGasInfo, GasInfo{Average: field.Average.Int32, CreatedAt: field.CreatedAt.Time.Format(time.RFC3339)})
+			newGasInfo = append(newGasInfo, GasInfo{Average: field.Average.String, CreatedAt: field.CreatedAt.Time.Format(time.RFC3339)})
 		}
 		fmt.Print(newGasInfo)
 	}
 
 	return c.JSON(http.StatusAccepted, newGasInfo)
+}
+
+func hexaNumberToInteger(hexaString string) string {
+	// replace 0x or 0X with empty String
+	numberStr := strings.Replace(hexaString, "0x", "", -1)
+	numberStr = strings.Replace(numberStr, "0X", "", -1)
+	return numberStr
 }
