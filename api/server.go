@@ -87,6 +87,7 @@ func (server *Server) setupRouter() {
 	e.POST("/checkUri", server.GetBlocklistByUri)
 	e.GET("/ethToUsd", server.EthToUsd)
 	e.GET("/getIffNftById", server.FetchIffNftById)
+	e.GET("/getIffNftMeta", server.FetchIffNftMeta)
 	e.POST("/checkExistBlocklists", server.CheckExistBlocklists)
 	e.POST("/checkBlocklists", server.CheckBlocklists)
 	// JWT - Authentication Middleware

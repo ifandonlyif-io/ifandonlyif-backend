@@ -122,4 +122,39 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, resp.String())
 }
 
-// Todo list nft counts
+// nft godoc
+// @Summary      getIffNftMeta
+// @Description  fetch limited IffNft
+// @Tags         getIffNftMeta
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /getIffNftMeta [GET]
+func (server *Server) FetchIffNftMeta(c echo.Context) (err error) {
+
+	// Create a Resty Client
+	client := resty.New()
+	client.Header.Add("accept", "application/json")
+	params := URL.Values{}
+
+	params.Set("contractAddress", server.config.IFFNftContractAddress)
+	//main net
+	//reqUrl := "https://eth-mainnet.g.alchemy.com/v2/uLe6RNK4s3INiolh-9N2t9hE2xpO2YGl/getNFTs?" + params.Encode()
+
+	// goerli net
+	// reqUrl := "https://eth-goerli.g.alchemy.com/v2/JJqZwPLyThiBz_TowjruMBZWKiL9UIae/getNFTs?" + params.Encode()
+
+	// sepolia net
+
+	reqUrl := server.config.AlchemyApiUrl + "getContractMetadata?" + params.Encode()
+
+	// request alchemy
+	resp, err := client.R().
+		EnableTrace().
+		Get(reqUrl)
+	if err != nil {
+		fmt.Println("No response from request")
+	}
+
+	return c.JSON(http.StatusOK, resp.String())
+}
