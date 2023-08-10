@@ -14,6 +14,17 @@ type iffid struct {
 	Iffid string `json:"iffid"`
 }
 
+type CheckPayload struct {
+	Address string `json:"address"`
+}
+
+func (ch CheckPayload) Validate() error {
+	if !hexRegex.MatchString(ch.Address) {
+		return ErrInvalidAddress
+	}
+	return nil
+}
+
 // nft godoc
 // @Summary      nftProjects
 // @Description  fetch limited nft projects
@@ -147,6 +158,50 @@ func (server *Server) FetchIffNftMeta(c echo.Context) (err error) {
 	// sepolia net
 
 	reqUrl := server.config.AlchemyApiUrl + "getContractMetadata?" + params.Encode()
+
+	// request alchemy
+	resp, err := client.R().
+		EnableTrace().
+		Get(reqUrl)
+	if err != nil {
+		fmt.Println("No response from request")
+	}
+
+	return c.JSON(http.StatusOK, resp.String())
+}
+
+// checkspamcontract
+
+// nft godoc
+// @Summary      isSpamContract
+// @Description  fetch limited IffNft
+// @Tags         isSpamContract
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /isSpamContract [GET]
+func (server *Server) CheckSpamContract(c echo.Context) (err error) {
+
+	var check CheckPayload
+
+	if err := (&echo.DefaultBinder{}).BindBody(c, &check); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	// validate wallet address
+	err = check.Validate()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
+	}
+
+	// Create a Resty Client
+	client := resty.New()
+	client.Header.Add("accept", "application/json")
+	params := URL.Values{}
+
+	params.Set("contractAddress", check.Address)
+
+	reqUrl := server.config.AlchemyApiUrl + "isSpamContract?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().

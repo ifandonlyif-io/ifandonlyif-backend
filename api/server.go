@@ -90,6 +90,7 @@ func (server *Server) setupRouter() {
 	e.GET("/getIffNftMeta", server.FetchIffNftMeta)
 	e.POST("/checkExistBlocklists", server.CheckExistBlocklists)
 	e.POST("/checkBlocklists", server.CheckBlocklists)
+	e.POST("/checkSpamContract", server.CheckSpamContract)
 	// JWT - Authentication Middleware
 	auth.POST("/fetchUserNft", server.FetchUserNfts)
 	auth.POST("/fetchUserIffNft", server.FetchUserIffNfts)
