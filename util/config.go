@@ -21,6 +21,10 @@ type Config struct {
 	EnableProfiler           bool          `mapstructure:"ENABLE_PROFILER"`
 	AlchemyApiUrl            string        `mapstructure:"ALCHEMY_API_URL"`
 	IFFNftContractAddress    string        `mapstructure:"IFFNFT_CONTRACT_ADDRESS"`
+	MoralisApiUrl            string        `mapstructure:"MORALIS_API_URL"`
+	MoralisApiKey            string        `mapstructure:"MORALIS_API_KEY"`
+	MoralisEthNetwork        string        `mapstructure:"MORALIS_ETH_NETWORK"`
+	BlackholeAddress         string        `mapstructure:"BLACKHOLE_ADDRESS"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

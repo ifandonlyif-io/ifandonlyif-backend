@@ -27,6 +27,10 @@ services:
       - REFRESH_TOKEN_DURATION=24h
       - ALCHEMY_API_URL=https://eth-sepolia.g.alchemy.com/v2/i8RTBcKFG3U1qEUbUprJXDatOggaZxcE/
       - IFFNFT_CONTRACT_ADDRESS=0xaA826D46b7fE6BDFA7CDaEE27067d3260F73228C
+      - MORALIS_API_URL=https://deep-index.moralis.io/api/v2/nft/
+      - MORALIS_API_KEY=PaWxDDpNGlpP4MviiVz4PabiJMvJLMimj8hR8HcgLwP69AUvSIklnjJHZPoAmE8O
+      - MORALIS_ETH_NETWORK=sepolia
+      - BLACKHOLE_ADDRESS=0x0000000000000000000000000000000000000000
     depends_on:
       - postgres
     entrypoint:

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	URL "net/url"
+	"strings"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/ifandonlyif-io/ifandonlyif-backend/token"
@@ -16,6 +17,21 @@ type iffid struct {
 
 type CheckPayload struct {
 	Address string `json:"address"`
+}
+
+type Response struct {
+	Total       interface{} `json:"total"`
+	Page        int         `json:"page"`
+	PageSize    int         `json:"page_size"`
+	Cursor      interface{} `json:"cursor"`
+	Result      []Result    `json:"result"`
+	BlockExists bool        `json:"block_exists"`
+}
+
+type Result struct {
+	TokenID     string `json:"token_id"`
+	FromAddress string `json:"from_address"`
+	ToAddress   string `json:"to_address"`
 }
 
 func (ch CheckPayload) Validate() error {
@@ -213,3 +229,55 @@ func (server *Server) CheckSpamContract(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, resp.String())
 }
+
+// fetchNftsByMinterAddress
+func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
+
+	payload, ok := c.Get(AuthorizationPayloadKey).(*token.Payload)
+
+	if !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid type for KEY")
+	}
+
+	params := URL.Values{}
+
+	params.Set("chain", server.config.MoralisEthNetwork)
+	params.Set("format", "decimal")
+	reqUrl := server.config.MoralisApiUrl + server.config.IFFNftContractAddress + "/transfers?" + params.Encode()
+
+	// Create a Resty Client
+	client := resty.New()
+	client.Header.Add("accept", "application/json")
+	client.Header.Add("X-API-Key", server.config.MoralisApiKey)
+
+	// To unmarshal resutls from moralis
+	var results Response
+
+	// request moralis
+	resp, err := client.R().
+		SetResult(&results).
+		Get(reqUrl)
+	if err != nil {
+		fmt.Printf("response failed: %s", err)
+	}
+
+	var minterIffTokenIds []string
+
+	// filter token id of user from minting
+	for _, s := range results.Result {
+		if s.FromAddress == server.config.BlackholeAddress &&
+			s.ToAddress == strings.ToLower(payload.Wallet) {
+			minterIffTokenIds = append(minterIffTokenIds, s.TokenID)
+		}
+	}
+	fmt.Print(minterIffTokenIds)
+	return c.JSON(http.StatusOK, resp.String())
+}
+
+// decode payload
+
+// get minter NFTs token
+
+// get NFT metadata
+
+// return to user
