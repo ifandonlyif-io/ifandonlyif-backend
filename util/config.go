@@ -20,6 +20,7 @@ type Config struct {
 	RefreshTokenDuration     time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	EnableProfiler           bool          `mapstructure:"ENABLE_PROFILER"`
 	AlchemyApiUrl            string        `mapstructure:"ALCHEMY_API_URL"`
+	AlchemyNftApiUrl         string        `mapstructure:"ALCHEMY_NFT_API_URL"`
 	IFFNftContractAddress    string        `mapstructure:"IFFNFT_CONTRACT_ADDRESS"`
 	MoralisApiUrl            string        `mapstructure:"MORALIS_API_URL"`
 	MoralisApiKey            string        `mapstructure:"MORALIS_API_KEY"`

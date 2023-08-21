@@ -86,7 +86,7 @@ func (server *Server) setupRouter() {
 	api.PATCH("/discord/channel/unlock/:id", server.UnlockChannel)
 	e.POST("/checkUri", server.GetBlocklistByUri)
 	e.GET("/ethToUsd", server.EthToUsd)
-	e.GET("/getIffNftById", server.FetchIffNftById)
+	e.POST("/getIffNftById", server.FetchIffNftById)
 	e.GET("/getIffNftMeta", server.FetchIffNftMeta)
 	e.POST("/checkExistBlocklists", server.CheckExistBlocklists)
 	e.POST("/checkBlocklists", server.CheckBlocklists)

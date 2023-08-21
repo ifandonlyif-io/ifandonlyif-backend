@@ -11,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type iffid struct {
-	Iffid string `json:"iffid"`
+type IffIdPayload struct {
+	IffId string `json:"iffid"`
 }
 
 type CheckPayload struct {
@@ -32,6 +32,16 @@ type Result struct {
 	TokenID     string `json:"token_id"`
 	FromAddress string `json:"from_address"`
 	ToAddress   string `json:"to_address"`
+}
+
+type Token struct {
+	TokenId         string `json:"tokenId"`
+	ContractAddress string `json:"contractAddress"`
+}
+
+type NFTMetadataRequest struct {
+	RefreshCache bool    `json:"refreshCache"`
+	Tokens       []Token `json:"tokens"`
 }
 
 func (ch CheckPayload) Validate() error {
@@ -112,22 +122,25 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 // @Success      200  {string}  StatusOK
 // @Router       /getIffNftById [GET]
 func (server *Server) FetchIffNftById(c echo.Context) (err error) {
-
-	var p iffid
+	fmt.Println("HHHHHH")
+	var p IffIdPayload
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
+	}
+	fmt.Printf("IFFID = %s", p.IffId)
 	// Create a Resty Client
 	client := resty.New()
 	client.Header.Add("accept", "application/json")
 	params := URL.Values{}
 
-	params.Set("contractAddresses[]", server.config.IFFNftContractAddress)
-	params.Set("withMetadata", "true")
-	params.Set("startToken", p.Iffid)
-	params.Set("limit", "1")
+	params.Set("contractAddress", server.config.IFFNftContractAddress)
+	params.Set("tokenId", p.IffId)
+	params.Set("refreshCache", "false")
 	//main net
 	//reqUrl := "https://eth-mainnet.g.alchemy.com/v2/uLe6RNK4s3INiolh-9N2t9hE2xpO2YGl/getNFTs?" + params.Encode()
 
@@ -136,7 +149,7 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 
 	// sepolia net
 
-	reqUrl := server.config.AlchemyApiUrl + "getNFTsForCollection?" + params.Encode()
+	reqUrl := server.config.AlchemyNftApiUrl + "getNFTMetadata?" + params.Encode()
 
 	// request alchemy
 	resp, err := client.R().
@@ -261,23 +274,44 @@ func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 		fmt.Printf("response failed: %s", err)
 	}
 
-	var minterIffTokenIds []string
+	fmt.Scan(resp)
+
+	var minterIffTokens []Token
 
 	// filter token id of user from minting
 	for _, s := range results.Result {
 		if s.FromAddress == server.config.BlackholeAddress &&
 			s.ToAddress == strings.ToLower(payload.Wallet) {
-			minterIffTokenIds = append(minterIffTokenIds, s.TokenID)
+			minterIffTokens = append(minterIffTokens, Token{
+				TokenId:         s.TokenID,
+				ContractAddress: server.config.IFFNftContractAddress,
+			})
+			// minterIffTokens[0].TokenId = s.TokenID
+			// minterIffTokens[1].ContractAddress = server.config.IFFNftContractAddress
 		}
 	}
-	fmt.Print(minterIffTokenIds)
-	return c.JSON(http.StatusOK, resp.String())
+
+	alchemyClient := resty.New()
+
+	requestBody := NFTMetadataRequest{
+		RefreshCache: false,
+		Tokens:       minterIffTokens,
+	}
+
+	alchemyReqUrl := server.config.AlchemyNftApiUrl + "getNFTMetadataBatch"
+
+	alchemyResp, alchemyErr := alchemyClient.R().
+		SetBody(requestBody).
+		SetHeader("Accept", "application/json").
+		SetHeader("Content-Type", "application/json").
+		EnableTrace().
+		Post(alchemyReqUrl)
+
+	if alchemyErr != nil {
+		fmt.Printf("response failed: %s", alchemyErr)
+	}
+	fmt.Println("_______________________________________________")
+	fmt.Print(requestBody)
+	return c.JSON(http.StatusOK, alchemyResp.String())
+
 }
-
-// decode payload
-
-// get minter NFTs token
-
-// get NFT metadata
-
-// return to user
