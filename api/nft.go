@@ -114,15 +114,14 @@ func (server *Server) FetchUserIffNfts(c echo.Context) (err error) {
 }
 
 // nft godoc
-// @Summary      getIffNftById
+// @Summary      fetchIffNftById
 // @Description  fetch limited IffNft
 // @Tags         getIffNftById
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /getIffNftById [GET]
+// @Router       /fetchIffNftById [POST]
 func (server *Server) FetchIffNftById(c echo.Context) (err error) {
-	fmt.Println("HHHHHH")
 	var p IffIdPayload
 
 	if err := (&echo.DefaultBinder{}).BindBody(c, &p); err != nil {
@@ -132,7 +131,7 @@ func (server *Server) FetchIffNftById(c echo.Context) (err error) {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, ErrInvalidAddress)
 	}
-	fmt.Printf("IFFID = %s", p.IffId)
+
 	// Create a Resty Client
 	client := resty.New()
 	client.Header.Add("accept", "application/json")
@@ -202,13 +201,13 @@ func (server *Server) FetchIffNftMeta(c echo.Context) (err error) {
 // checkspamcontract
 
 // nft godoc
-// @Summary      isSpamContract
+// @Summary      checkSpamContract
 // @Description  fetch limited IffNft
-// @Tags         isSpamContract
+// @Tags         checkSpamContract
 // @Accept */*
 // @produce application/json
 // @Success      200  {string}  StatusOK
-// @Router       /isSpamContract [GET]
+// @Router       /checkSpamContract [POST]
 func (server *Server) CheckSpamContract(c echo.Context) (err error) {
 
 	var check CheckPayload
@@ -243,7 +242,14 @@ func (server *Server) CheckSpamContract(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, resp.String())
 }
 
-// fetchNftsByMinterAddress
+// nft godoc
+// @Summary      fetchNftsByMinterAddress
+// @Description  fetch IffNftby Minter Address
+// @Tags         fetchNftsByMinterAddress
+// @Accept */*
+// @produce application/json
+// @Success      200  {string}  StatusOK
+// @Router       /fetchNftsByMinterAddress [POST]
 func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 
 	payload, ok := c.Get(AuthorizationPayloadKey).(*token.Payload)
@@ -286,8 +292,6 @@ func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 				TokenId:         s.TokenID,
 				ContractAddress: server.config.IFFNftContractAddress,
 			})
-			// minterIffTokens[0].TokenId = s.TokenID
-			// minterIffTokens[1].ContractAddress = server.config.IFFNftContractAddress
 		}
 	}
 
@@ -310,8 +314,7 @@ func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 	if alchemyErr != nil {
 		fmt.Printf("response failed: %s", alchemyErr)
 	}
-	fmt.Println("_______________________________________________")
-	fmt.Print(requestBody)
+
 	return c.JSON(http.StatusOK, alchemyResp.String())
 
 }
