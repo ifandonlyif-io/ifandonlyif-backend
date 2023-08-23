@@ -224,7 +224,7 @@ func Authenticate(server *Server, c echo.Context, wallet string, sigHex string) 
 	// https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L516
 	// check here why I am subtracting 27 from the last byte
 	sig[crypto.RecoveryIDOffset] -= 27
-	msg := accounts.TextHash([]byte("Welcome to IfAndOnlyIf.io!! we will enhance your WEB3/NFT experience. Security Nonce: " + user.Nonce.String))
+	msg := accounts.TextHash([]byte("Welcome to IfAndOnlyIf.io!! We will enhance your WEB3/NFT experience. Security Nonce: " + user.Nonce.String))
 	recovered, err := crypto.SigToPub(msg, sig)
 
 	if err != nil {
