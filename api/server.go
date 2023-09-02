@@ -67,6 +67,17 @@ func (server *Server) setupRouter() {
 		},
 	}))
 
+	adminApi := e.Group("/api/admin", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
+		KeyLookup: "header:token",
+		Validator: func(key string, c echo.Context) (bool, error) {
+			_, err := server.store.GetUserIdByToken(c.Request().Context(), key)
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		},
+	}))
+
 	// Routes
 	auth := e.Group("/auth", server.AuthMiddleware)
 	e.GET("/gasInfo", server.GasHandler)
@@ -103,6 +114,12 @@ func (server *Server) setupRouter() {
 	api.POST("/fetchBlockListById", server.GetBlockListById)
 	api.POST("/disproveBlocklist", server.DisproveBlocklist)
 	api.POST("/verifyBlocklist", server.VerifyBlocklist)
+
+	e.POST("api/admin/login", server.AdminLogin)
+	adminApi.GET("/me", server.checkLoginStatus)
+	adminApi.GET("/user-management/users", server.GetAllUsers)
+	adminApi.POST("/user-management/user", server.NewUser)
+	adminApi.DELETE("/user-management/user/:id", server.DeleteUser)
 
 	server.Echo = e
 }
