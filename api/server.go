@@ -117,6 +117,9 @@ func (server *Server) setupRouter() {
 
 	e.POST("api/admin/login", server.AdminLogin)
 	adminApi.GET("/me", server.checkLoginStatus)
+	adminApi.GET("/user-management/users", server.GetAllUsers)
+	adminApi.POST("/user-management/user", server.NewUser)
+	adminApi.DELETE("/user-management/user/:id", server.DeleteUser)
 
 	server.Echo = e
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	db "github.com/ifandonlyif-io/ifandonlyif-backend/db/sqlc"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -143,4 +144,153 @@ func (server *Server) checkLoginStatus(e echo.Context) error {
 	user.Password = ""
 	response.Data = user
 	return e.JSON(http.StatusOK, response)
+}
+
+func (server *Server) GetAllUsers(e echo.Context) error {
+	response := AdminResponse{
+		Message: "",
+		Data:    nil,
+		Error:   nil,
+	}
+
+	if !server.isAdmin(e) {
+		response.Message = "permission denied"
+		return e.JSON(http.StatusForbidden, response)
+	}
+
+	users, err := server.store.GetAllAdminUsers(e.Request().Context())
+	if err != nil {
+		response.Message = "Internal Server Error"
+		response.Error = err.Error()
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	for _, user := range users {
+		user.Password = ""
+	}
+
+	response.Data = struct {
+		User []db.AdminUser `json:"users"`
+	}{
+		User: users,
+	}
+
+	return e.JSON(http.StatusOK, response)
+}
+
+type newUserRequest struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+func (server *Server) NewUser(e echo.Context) error {
+	response := AdminResponse{
+		Message: "",
+		Data:    nil,
+		Error:   nil,
+	}
+
+	if !server.isAdmin(e) {
+		response.Message = "permission denied"
+		return e.JSON(http.StatusForbidden, response)
+	}
+
+	var request *newUserRequest
+	err := e.Bind(&request)
+	if err != nil {
+		response.Message = "Invalid request"
+		response.Error = err.Error()
+		return e.JSON(http.StatusUnprocessableEntity, response)
+	}
+
+	if request.Email == "" || request.Name == "" || request.Password == "" {
+		response.Message = "Invalid request some field is empty"
+		return e.JSON(http.StatusUnprocessableEntity, response)
+	}
+
+	user, _ := server.store.GetAdminUserByEmail(e.Request().Context(), request.Email)
+	if user.Email != "" {
+		response.Message = "Email already exist"
+		return e.JSON(http.StatusUnprocessableEntity, response)
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		response.Message = "Internal Server Error"
+		response.Error = err.Error()
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	user, err = server.store.CreateAdminUser(e.Request().Context(), db.CreateAdminUserParams{
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: string(hashedPassword),
+		IsAdmin:  false,
+	})
+
+	if err != nil {
+		response.Message = "Internal Server Error"
+		response.Error = err.Error()
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	user.Password = ""
+
+	response.Message = "User created"
+	response.Data = user
+	return e.JSON(http.StatusOK, response)
+}
+
+func (server *Server) DeleteUser(e echo.Context) error {
+	response := AdminResponse{
+		Message: "",
+		Data:    nil,
+		Error:   nil,
+	}
+
+	if !server.isAdmin(e) {
+		response.Message = "permission denied"
+		return e.JSON(http.StatusForbidden, response)
+	}
+
+	id := e.Param("id")
+	Uuid, err := uuid.Parse(id)
+
+	if err != nil {
+		response.Message = "id is not valid"
+		response.Error = err.Error()
+		return e.JSON(http.StatusUnprocessableEntity, response)
+	}
+
+	err = server.store.DeleteAdminUser(e.Request().Context(), Uuid)
+
+	if err != nil {
+		response.Message = "Internal Server Error"
+		response.Error = err.Error()
+		return e.JSON(http.StatusInternalServerError, response)
+	}
+
+	response.Message = "User deleted"
+	return e.JSON(http.StatusOK, response)
+}
+
+func (server *Server) isAdmin(e echo.Context) bool {
+	token := e.Request().Header.Get("token")
+	UserId, err := server.store.GetUserIdByToken(e.Request().Context(), token)
+	if err != nil {
+		return false
+	}
+
+	user, err := server.store.GetAdminUserByID(e.Request().Context(), UserId.UserID)
+	if err != nil {
+		return false
+	}
+
+	if !user.IsAdmin {
+		return false
+	}
+
+	return true
 }
