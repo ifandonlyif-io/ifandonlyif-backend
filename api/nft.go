@@ -20,23 +20,21 @@ type CheckPayload struct {
 }
 
 type Response struct {
-	Total       interface{} `json:"total"`
-	Page        int         `json:"page"`
-	PageSize    int         `json:"page_size"`
-	Cursor      interface{} `json:"cursor"`
-	Result      []Result    `json:"result"`
-	BlockExists bool        `json:"block_exists"`
+	Page     int         `json:"page"`
+	PageSize int         `json:"page_size"`
+	Cursor   interface{} `json:"cursor"`
+	Result   []Result    `json:"result"`
 }
 
 type Result struct {
-	TokenID     string `json:"token_id"`
-	FromAddress string `json:"from_address"`
-	ToAddress   string `json:"to_address"`
+	TokenID       string `json:"token_id"`
+	MinterAddress string `json:"minter_address"`
 }
 
 type Token struct {
 	TokenId         string `json:"tokenId"`
 	ContractAddress string `json:"contractAddress"`
+	TokenType       string `json:"tokenType"`
 }
 
 type NFTMetadataRequest struct {
@@ -262,7 +260,8 @@ func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 
 	params.Set("chain", server.config.MoralisEthNetwork)
 	params.Set("format", "decimal")
-	reqUrl := server.config.MoralisApiUrl + server.config.IFFNftContractAddress + "/transfers?" + params.Encode()
+	//params.Set("media_items", "false")
+	reqUrl := server.config.MoralisApiUrl + server.config.IFFNftContractAddress + "?" + params.Encode()
 
 	// Create a Resty Client
 	client := resty.New()
@@ -286,11 +285,11 @@ func (server *Server) fetchNftsByMinterAddress(c echo.Context) (err error) {
 
 	// filter token id of user from minting
 	for _, s := range results.Result {
-		if s.FromAddress == server.config.BlackholeAddress &&
-			s.ToAddress == strings.ToLower(payload.Wallet) {
+		if s.MinterAddress == strings.ToLower(payload.Wallet) {
 			minterIffTokens = append(minterIffTokens, Token{
 				TokenId:         s.TokenID,
 				ContractAddress: server.config.IFFNftContractAddress,
+				TokenType:       "ERC721",
 			})
 		}
 	}
