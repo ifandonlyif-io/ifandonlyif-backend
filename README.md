@@ -28,3 +28,4 @@
 
 > generates sql query for go 
 `make sqlc` 
+This project is released under the MIT License. Free use and modification are encouraged, but the original author retains priority rights for commercialization, naming, and promotional use. For commercial deployment or collaboration with government entities, please contact me to explore joint development opportunities.
